@@ -22,6 +22,8 @@
 		CD01A9EC2BD6678800D1E32D /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = CD01A9EB2BD6678800D1E32D /* FirebaseMessaging */; };
 		CD01A9EE2BD6678800D1E32D /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = CD01A9ED2BD6678800D1E32D /* FirebaseStorage */; };
 		CD01A9F22BD66B6100D1E32D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD01A9F12BD66B6100D1E32D /* GoogleService-Info.plist */; };
+		CD01A9F42BD7056500D1E32D /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F32BD7056500D1E32D /* SignInView.swift */; };
+		CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F62BD705F300D1E32D /* SignUpView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		CD01A9CF2BD5B73800D1E32D /* HabitSetterUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitSetterUITests.swift; sourceTree = "<group>"; };
 		CD01A9D12BD5B73800D1E32D /* HabitSetterUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitSetterUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		CD01A9F12BD66B6100D1E32D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CD01A9F32BD7056500D1E32D /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		CD01A9F62BD705F300D1E32D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,9 +114,9 @@
 		CD01A9B32BD5B73600D1E32D /* HabitSetter */ = {
 			isa = PBXGroup;
 			children = (
+				CD01A9F52BD705B400D1E32D /* Views */,
 				CD01A9F12BD66B6100D1E32D /* GoogleService-Info.plist */,
 				CD01A9B42BD5B73600D1E32D /* HabitSetterApp.swift */,
-				CD01A9B62BD5B73600D1E32D /* ContentView.swift */,
 				CD01A9B82BD5B73800D1E32D /* Assets.xcassets */,
 				CD01A9BA2BD5B73800D1E32D /* Preview Content */,
 			);
@@ -142,6 +146,16 @@
 				CD01A9D12BD5B73800D1E32D /* HabitSetterUITestsLaunchTests.swift */,
 			);
 			path = HabitSetterUITests;
+			sourceTree = "<group>";
+		};
+		CD01A9F52BD705B400D1E32D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				CD01A9F32BD7056500D1E32D /* SignInView.swift */,
+				CD01A9F62BD705F300D1E32D /* SignUpView.swift */,
+				CD01A9B62BD5B73600D1E32D /* ContentView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -287,6 +301,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */,
+				CD01A9F42BD7056500D1E32D /* SignInView.swift in Sources */,
 				CD01A9B72BD5B73600D1E32D /* ContentView.swift in Sources */,
 				CD01A9B52BD5B73600D1E32D /* HabitSetterApp.swift in Sources */,
 			);

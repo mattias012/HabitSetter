@@ -1,31 +1,12 @@
 //
-//  ContentView.swift
+//  SignInView.swift
 //  HabitSetter
 //
-//  Created by Mattias Axelsson on 2024-04-21.
+//  Created by Mattias Axelsson on 2024-04-22.
 //
 
 import SwiftUI
 import Firebase
-
-//First view, what should be displayed
-struct ContentView: View {
-    
-    @State var signedIn = false //Remember the state, we need to keep track of it
-    
-    var body: some View {
-        
-        //If not signed in, show sign in view
-        if !signedIn{
-            SignInView(signedIn: $signedIn)
-            
-        }
-        else {
-            //Otherwise show the root view of the app
-            HabitSetterRootView()
-        }
-    }
-}
 
 struct SignInView : View {
     
@@ -49,9 +30,6 @@ struct SignInView : View {
             VStack(spacing: 16) {
                 TextField("Email", text: $email)
                     .focused($isEmailFocused)
-                    .onChange(of: isEmailFocused) { //Perhaps we add something different here later on
-                        email = ""
-                    }
                     .padding(.horizontal)
                     .frame(height: 50)
                     .background(Color.gray.opacity(0.1))
@@ -59,9 +37,6 @@ struct SignInView : View {
                 
                 SecureField("Password", text: $password)
                     .focused($isPasswordFocused)
-                    .onChange(of: isPasswordFocused){
-                        password = ""
-                    }
                     .padding(.horizontal)
                     .frame(height: 50)
                     .background(Color.gray.opacity(0.1))
@@ -71,19 +46,23 @@ struct SignInView : View {
             
             Button(action: {
                 
+                //Set the action, ie login. Move this?
                 auth.signIn(withEmail: email, password: password) { result, error in
                     if let error = error {
                         print("Error signing in: \(error)")
                     } else {
-                        signedIn = true
+                        self.signedIn = true
                     }
                 }
             }) {
+                
+                //set a hstack to sort image and text
                 HStack {
                     Text("Sign in")
                     Image(systemName: "arrow.right")
                 }
             }
+            //Styles for the button
             .padding()
             .frame(height: 50)
             .background(Color.blue)
@@ -104,12 +83,6 @@ struct SignInView : View {
     }
 }
 
-struct HabitSetterRootView : View {
-    var body: some View {
-        Text("Logged in and showing habits")
-    }
-}
-
 #Preview {
-    ContentView()
+    SignInView(signedIn: .constant(false))
 }
