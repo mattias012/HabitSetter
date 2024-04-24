@@ -11,6 +11,7 @@ import Firebase
 struct SignInView : View {
     
     @Binding var signedIn : Bool //Bind the state from content view since we need to update it soon
+    @Binding var isLoading: Bool
     var auth = Auth.auth()
     
     @State private var email: String = ""
@@ -26,7 +27,7 @@ struct SignInView : View {
             Text("Welcome, please sign in")
                 .font(.title)
                 .padding(.bottom, 20)
-           
+            
             VStack(spacing: 16) {
                 TextField("Email", text: $email)
                     .focused($isEmailFocused)
@@ -42,19 +43,9 @@ struct SignInView : View {
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(10)
             }
-                .padding(.horizontal)
+            .padding(.horizontal)
             
-            Button(action: {
-                
-                //Set the action, ie login. Move this?
-                auth.signIn(withEmail: email, password: password) { result, error in
-                    if let error = error {
-                        print("Error signing in: \(error)")
-                    } else {
-                        self.signedIn = true
-                    }
-                }
-            }) {
+            Button(action: signIn) {
                 
                 //set a hstack to sort image and text
                 HStack {
@@ -81,8 +72,21 @@ struct SignInView : View {
         //        }
         
     }
+    
+    
+    private func signIn() {
+        isLoading = true  // load progressview
+        auth.signIn(withEmail: email, password: password) { result, error in
+            isLoading = false  //hide progress view
+            if let error = error {
+                print("Error signing in: \(error)")
+            } else {
+                signedIn = true
+            }
+        }
+    }
+    
 }
-
 #Preview {
-    SignInView(signedIn: .constant(false))
+    SignInView(signedIn: .constant(false), isLoading: .constant(false))
 }

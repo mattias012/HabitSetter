@@ -24,6 +24,7 @@
 		CD01A9F22BD66B6100D1E32D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD01A9F12BD66B6100D1E32D /* GoogleService-Info.plist */; };
 		CD01A9F42BD7056500D1E32D /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F32BD7056500D1E32D /* SignInView.swift */; };
 		CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F62BD705F300D1E32D /* SignUpView.swift */; };
+		CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F82BD9075F00D1E32D /* HabitsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		CD01A9F12BD66B6100D1E32D /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CD01A9F32BD7056500D1E32D /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		CD01A9F62BD705F300D1E32D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
+		CD01A9F82BD9075F00D1E32D /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 				CD01A9F32BD7056500D1E32D /* SignInView.swift */,
 				CD01A9F62BD705F300D1E32D /* SignUpView.swift */,
 				CD01A9B62BD5B73600D1E32D /* ContentView.swift */,
+				CD01A9F82BD9075F00D1E32D /* HabitsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 				CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */,
 				CD01A9F42BD7056500D1E32D /* SignInView.swift in Sources */,
 				CD01A9B72BD5B73600D1E32D /* ContentView.swift in Sources */,
+				CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */,
 				CD01A9B52BD5B73600D1E32D /* HabitSetterApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
