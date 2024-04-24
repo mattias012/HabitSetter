@@ -20,9 +20,10 @@ struct ContentView: View {
         //add group to allow if statement of views
         Group {
             if isLoading {
-                ProgressView()  // Visa en snurrande indikator
+                //show loading progress view incicator
+                ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-                    .scaleEffect(2)  // Gör den större för synlighet
+                    .scaleEffect(2) 
             } else if !signedIn {
                 SignInView(signedIn: $signedIn, isLoading: $isLoading)
             } else {
