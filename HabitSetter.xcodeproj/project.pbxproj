@@ -26,6 +26,8 @@
 		CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F62BD705F300D1E32D /* SignUpView.swift */; };
 		CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9F82BD9075F00D1E32D /* HabitsView.swift */; };
 		CD01A9FC2BD9088400D1E32D /* Habit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01A9FB2BD9088400D1E32D /* Habit.swift */; };
+		CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */; };
+		CD01AA032BDA72BE00D1E32D /* AddEditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +63,8 @@
 		CD01A9F62BD705F300D1E32D /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		CD01A9F82BD9075F00D1E32D /* HabitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsView.swift; sourceTree = "<group>"; };
 		CD01A9FB2BD9088400D1E32D /* Habit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Habit.swift; sourceTree = "<group>"; };
+		CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsViewModel.swift; sourceTree = "<group>"; };
+		CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditHabitView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +122,7 @@
 		CD01A9B32BD5B73600D1E32D /* HabitSetter */ = {
 			isa = PBXGroup;
 			children = (
+				CD01A9FD2BDA66D200D1E32D /* ViewModels */,
 				CD01A9FA2BD9087900D1E32D /* Models */,
 				CD01A9F52BD705B400D1E32D /* Views */,
 				CD01A9F12BD66B6100D1E32D /* GoogleService-Info.plist */,
@@ -160,6 +165,7 @@
 				CD01A9F62BD705F300D1E32D /* SignUpView.swift */,
 				CD01A9B62BD5B73600D1E32D /* ContentView.swift */,
 				CD01A9F82BD9075F00D1E32D /* HabitsView.swift */,
+				CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -170,6 +176,14 @@
 				CD01A9FB2BD9088400D1E32D /* Habit.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		CD01A9FD2BDA66D200D1E32D /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -318,8 +332,10 @@
 				CD01A9FC2BD9088400D1E32D /* Habit.swift in Sources */,
 				CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */,
 				CD01A9F42BD7056500D1E32D /* SignInView.swift in Sources */,
+				CD01AA032BDA72BE00D1E32D /* AddEditHabitView.swift in Sources */,
 				CD01A9B72BD5B73600D1E32D /* ContentView.swift in Sources */,
 				CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */,
+				CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */,
 				CD01A9B52BD5B73600D1E32D /* HabitSetterApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
