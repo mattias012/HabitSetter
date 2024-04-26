@@ -9,27 +9,36 @@ import SwiftUI
 
 struct HabitsView: View {
     // Mockup data för demonstration
-    var habits = ["Read Book", "Workout", "Meditation", "Run", "Do not code Android apps", "something else", "more test data", "Need to code in swift", "test data2", "Need to code in swift", "test data2"]
+    //    var habits = ["Read Book", "Workout", "Meditation", "Run", "Do not code Android apps", "something else", "more test data", "Need to code in swift", "test data2", "Need to code in swift", "test data2"]
+    
+    @StateObject var habits = HabitsViewModel()
+    
     
     var body: some View {
         TabView {
             // Tab 1: Home View
             NavigationStack {
                 VStack(spacing: 10) {  // distance between stuff in the group
-                    List(habits, id: \.self) { habit in
-                        Text(habit)
+                    List(){
+                        ForEach (habits.listOfHabits) { habit in
+                            HStack {
+                                Text(habit.name)
+                            }
                             .padding(.vertical, 5)
+                        }
                     }
+                    
                     .listStyle(PlainListStyle())
                     
-                    Group { Text("Completed Habits Today")
+                    Group { 
+                        Text("Completed Habits Today")
                             .font(.headline)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 10) {
-                                ForEach(habits, id: \.self) { habit in
-                                    Text(habit)
+                                ForEach (habits.listOfHabits) { habit in
+                                    Text(habit.name)
                                         .padding()
                                         .background(Color.gray.opacity(0.2)) //background
                                         .cornerRadius(10) //looks like cards..
@@ -41,17 +50,21 @@ struct HabitsView: View {
                     }
                     .background(Color.gray.opacity(0.1))
                 }
-                 .navigationTitle("Habits for today")
-             }
+                .navigationTitle("Habits for today")
+            }
             .tabItem {
                 Label("Home", systemImage: "house")
             }
-            
+            .onAppear(){
+//                habits.getHabits()
+            }
             
             // Tab 2: List of all habits
             NavigationStack {
-                List(habits, id: \.self) { habit in
-                    Text(habit)
+                List(){
+                    ForEach (habits.listOfHabits) { habit in
+                        Text(habit.name)
+                    }
                 }
                 .navigationTitle("All Habits")
                 .toolbar {
@@ -76,7 +89,10 @@ struct HabitsView: View {
             }
         }
     }
+    
+    
 }
+
 
 #Preview {
     HabitsView()

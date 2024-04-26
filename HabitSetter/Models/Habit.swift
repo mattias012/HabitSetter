@@ -11,6 +11,8 @@ import FirebaseFirestoreSwift
 
 // Definierar kategorierna som en enum för bättre typsäkerhet.
 enum HabitCategory: String, Codable, CaseIterable {
+ 
+    
     case work = "Work"
     case personal = "Personal"
 }
@@ -21,7 +23,7 @@ enum HabitInterval: Int, Codable, CaseIterable {
     case weekly = 7
 }
 
-struct Habit: Codable {
+struct Habit: Codable, Identifiable {
     
     @DocumentID var id: String?
     var name: String = ""
