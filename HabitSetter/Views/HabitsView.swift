@@ -8,27 +8,28 @@
 import SwiftUI
 
 struct HabitsView: View {
-    // Mockup data för demonstration
-    //    var habits = ["Read Book", "Workout", "Meditation", "Run", "Do not code Android apps", "something else", "more test data", "Need to code in swift", "test data2", "Need to code in swift", "test data2"]
     
     @ObservedObject var habits = HabitsViewModel()
-    
-    let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 10), count: 2) // Definiera antalet kolumner och avståndet mellan dem
-    
+
     var body: some View {
+       
         TabView {
             // Tab 1: Home View
             NavigationStack {
-                VStack() {  // distance between stuff in the group
-                    ScrollView(.horizontal, showsIndicators: true){
-                        LazyVGrid(columns: columns, spacing: 0) { // Använd LazyVGrid för att hantera stora dataset effektivt
+                Spacer()
+                VStack() {  //set distance between stuff in the group
+                    List(){
                             ForEach(habits.listOfHabits) { habit in
                                 HabitCard(habit: habit)
+                                    .frame(maxHeight: 160)
+                                    .padding(.horizontal, -5)
+                                    .listRowInsets(EdgeInsets())
                             }
-                        }
                     }
-                    .padding()
-                        
+                    .listStyle(PlainListStyle())
+                
+                    Spacer()
+                    
                     Group {
                         Text("Completed Habits Today")
                             .font(.headline)
@@ -47,7 +48,7 @@ struct HabitsView: View {
                         }.padding(.bottom, 20)
                         
                     }
-                    //                    .background(Color.gray.opacity(0.1))
+                    Spacer()
                 }
                 .navigationTitle("Habits for today")
             }
@@ -95,13 +96,14 @@ struct HabitCard: View {
     var habit: Habit
     
     var body: some View {
-        HStack(spacing: 10) {
-            
-            Image("habit")
-                .resizable()  // Gör bilden skalbar
-                .aspectRatio(contentMode: .fill)  // Behåller bildens aspektkvot
-                .frame(width: 60, height: 60)  // Ställer in bildens storlek
-                .cornerRadius(40)  // Gör bilden cirkulär
+        HStack(alignment: .top, spacing: 10) {
+            VStack (alignment: .leading){
+                Image("habit")
+                    .resizable()  //make it resizeable
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60, height: 60)  //size
+                    .cornerRadius(40)  //make it round
+            }
             
             VStack (alignment: .leading) {
                 Text(habit.name)
@@ -111,15 +113,16 @@ struct HabitCard: View {
                     Text(habit.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                        .lineLimit(nil) // Tillåter fler än en rad om nödvändigt
+                        .lineLimit(nil) //allow more lines
                 }
             }
+            Spacer()
         }
-        .frame(maxWidth: .infinity)
         .padding()
-        .background(Color.white) // Ljus bakgrund för kortet
-        .cornerRadius(10) // Runda hörn
-        .shadow(radius: 5) // Lägger till en liten skugga för att ge djup
+        .frame(maxWidth: .infinity)
+        .background(Color.white)
+        .cornerRadius(10) // make round corneres looks nicer
+        .shadow(radius: 5) //add shadow
         .padding(.horizontal)
         .padding(.vertical, 5)
     }
