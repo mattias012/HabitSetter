@@ -65,11 +65,11 @@ struct SignInView : View {
         }
         .padding()
         
-        //        .onAppear {
-        //            if Auth.auth().currentUser != nil {
-        //                signedIn = true
-        //            }
-        //        }
+                .onAppear {
+                    if Auth.auth().currentUser != nil {
+                        signedIn = true
+                    }
+                }
         
     }
     
