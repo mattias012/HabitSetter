@@ -15,30 +15,32 @@ struct HabitsView: View {
         TabView {
             // Tab 1: Home View
             NavigationStack {
-                 VStack(spacing: 10) {  // Kontrollerar avståndet mellan element direkt
-//                     Text("Today's Habits").font(.headline).padding(.vertical, 5)
-                     List(habits, id: \.self) { habit in
-                         Text(habit)
-                             .padding(.vertical, 5)
-                     }
-                     .listStyle(PlainListStyle())
-
-                     Text("Completed Habits Today")
-                         .font(.headline)
-                         .padding()
-                         .frame(maxWidth: .infinity, alignment: .leading)
-                     ScrollView(.horizontal, showsIndicators: false) {
-                         HStack(spacing: 10) {
-                             ForEach(habits, id: \.self) { habit in
-                                 Text(habit)
-                                     .padding()
-                                     .background(Color.gray.opacity(0.2))  // Lägg till en svag bakgrundsfärg
-                                     .cornerRadius(10)
-                             }
-                         }
-                         .padding(.horizontal)
-                     }.padding(.bottom, 20)
-                 }
+                VStack(spacing: 10) {  // distance between stuff in the group
+                    List(habits, id: \.self) { habit in
+                        Text(habit)
+                            .padding(.vertical, 5)
+                    }
+                    .listStyle(PlainListStyle())
+                    
+                    Group { Text("Completed Habits Today")
+                            .font(.headline)
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 10) {
+                                ForEach(habits, id: \.self) { habit in
+                                    Text(habit)
+                                        .padding()
+                                        .background(Color.gray.opacity(0.2)) //background
+                                        .cornerRadius(10) //looks like cards..
+                                }
+                            }
+                            .padding(.horizontal)
+                        }.padding(.bottom, 20)
+                        
+                    }
+                    .background(Color.gray.opacity(0.1))
+                }
                  .navigationTitle("Habits for today")
              }
             .tabItem {
