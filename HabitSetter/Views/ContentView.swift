@@ -12,18 +12,22 @@ import Firebase
 struct ContentView: View {
     
     @State var signedIn = false //Remember the state, we need to keep track of it
+    @State private var isLoading = false  // Lägg till denna rad
+    
     
     var body: some View {
         
         //add group to allow if statement of views
         Group {
-            //If not signed in, show sign in view
-            if !signedIn{
-                SignInView(signedIn: $signedIn)
-            }
-            else {
-                //Otherwise show the root view of the app
-                HabitSetterRootView()
+            if isLoading {
+                //show loading progress view incicator
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .scaleEffect(2) 
+            } else if !signedIn {
+                SignInView(signedIn: $signedIn, isLoading: $isLoading)
+            } else {
+                HabitsView()
             }
         }
     }
@@ -31,11 +35,6 @@ struct ContentView: View {
 
 
 
-struct HabitSetterRootView : View {
-    var body: some View {
-        Text("Logged in and showing habits")
-    }
-}
 
 #Preview {
     ContentView(signedIn: false)
