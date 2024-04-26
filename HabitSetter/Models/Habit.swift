@@ -27,7 +27,7 @@ struct Habit: Codable, Identifiable {
     
     @DocumentID var id: String?
     var name: String = ""
-    var description : String = ""
+    var description: String = ""
     var category: HabitCategory  // enum
     var interval: HabitInterval  // enum
     var lastPerformed: Date?
@@ -75,6 +75,7 @@ struct Habit: Codable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(String.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
+        description = try container.decode(String.self, forKey: .description)
         category = try container.decode(HabitCategory.self, forKey: .category)
         interval = try container.decode(HabitInterval.self, forKey: .interval)
         lastPerformed = try container.decodeIfPresent(Date.self, forKey: .lastPerformed)
