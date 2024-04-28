@@ -10,22 +10,26 @@ import FirebaseFirestore
 import FirebaseAuth
 
 struct AddEditHabitView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) var presentationModeAddEdit
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var selectedCategory: HabitCategory = .personal
     @State private var selectedInterval: HabitInterval = .daily
     @State private var imageLink: String = ""
     @State private var sendNotification: Bool = true
+    @State private var showErrorAlert = false
     
     let db = Firestore.firestore()
     let auth = Auth.auth()
-
+    
     var habit: Habit?
+    
+    //
+    @EnvironmentObject var habitsVM : HabitsViewModel
     
     var body: some View {
         
-     
+        
         NavigationStack {
             Form {
                 VStack {
@@ -42,12 +46,13 @@ struct AddEditHabitView: View {
                                 Text(interval == .daily ? "Daily" : "Weekly").tag(interval)
                             }
                         }
-
+                        
                         TextField("Image URL", text: $imageLink)
                         Toggle("Send Notification", isOn: $sendNotification)
                     }
                 }
                 Button("Save") {
+                    habitsVM.errorMessage = nil // Rensa gamla felmeddelanden innan ett nytt försök görs
                     saveHabit()
                 }
                 .buttonStyle(.borderedProminent)
@@ -56,7 +61,21 @@ struct AddEditHabitView: View {
             .onAppear {
                 loadHabitData()
             }
+            .alert("Error", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) { showErrorAlert = false }
+            } message: {
+                Text(habitsVM.errorMessage ?? "Unknown error")
+            }
         }
+        .onChange(of: habitsVM.habitAddedSuccessfully) {
+            presentationModeAddEdit.wrappedValue.dismiss()
+            habitsVM.habitAddedSuccessfully = false
+            
+        }
+        .onChange(of: habitsVM.errorMessage) {
+            showErrorAlert = true
+        }
+        
     }
     
     func loadHabitData() {
@@ -85,13 +104,11 @@ struct AddEditHabitView: View {
             dateCreated: Timestamp(date: Date()),  // Current date
             dateEdited: Timestamp(date: Date())    // Current date
         )
-
-        // Save to firestore
-        let habitsVM = HabitsViewModel()
+        
         
         habitsVM.add(habit: newHabit)
     }
-
+    
 }
 
 

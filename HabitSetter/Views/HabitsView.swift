@@ -9,8 +9,9 @@ import SwiftUI
 
 struct HabitsView: View {
     
-    @ObservedObject var habits = HabitsViewModel()
-
+    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var habitsVM : HabitsViewModel
+    
     var body: some View {
        
         TabView {
@@ -19,7 +20,7 @@ struct HabitsView: View {
                 Spacer()
                 VStack() {  //set distance between stuff in the group
                     List(){
-                            ForEach(habits.listOfHabits) { habit in
+                            ForEach(habitsVM.listOfHabits) { habit in
                                 HabitCard(habit: habit)
                                     .frame(maxHeight: 160)
                                     .padding(.horizontal, -5)
@@ -37,7 +38,7 @@ struct HabitsView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 10) {
-                                ForEach (habits.listOfHabits) { habit in
+                                ForEach (habitsVM.listOfPerformedHabits) { habit in
                                     Text(habit.name)
                                         .padding()
                                         .background(Color.gray.opacity(0.2)) //background
@@ -62,7 +63,7 @@ struct HabitsView: View {
             // Tab 2: List of all habits
             NavigationStack {
                 List(){
-                    ForEach (habits.listOfHabits) { habit in
+                    ForEach (habitsVM.listOfHabits) { habit in
                         Text(habit.name)
                     }
                 }
@@ -72,6 +73,7 @@ struct HabitsView: View {
                         NavigationLink(destination: AddEditHabitView()) {
                             Image(systemName: "plus")
                         }
+                        
                     }
                 }
             }
