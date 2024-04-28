@@ -24,6 +24,7 @@ class HabitsViewModel : ObservableObject {
     @Published var errorMessage: String?
     
     @Published var habitAddedSuccessfully = false
+    @Published var habitRemovedSuccessfully = false
     
     
     deinit {
@@ -62,6 +63,27 @@ class HabitsViewModel : ObservableObject {
             }
         }
     }
+    func remove(habit: Habit) {
+        guard let habitId = habit.id else {
+            DispatchQueue.main.async {
+                self.errorMessage = "Error: Habit has no ID"
+            }
+            return
+        }
+
+        db.collection("habits").document(habitId).delete { [weak self] error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.errorMessage = "Error removing habit: \(error.localizedDescription)"
+                    self?.habitRemovedSuccessfully = false
+                } else {
+                    // It was possible to remove it
+                    self?.habitRemovedSuccessfully = true
+                }
+            }
+        }
+    }
+
     
     func loadHabits(fromUserId: String, performed: Bool) {
         habitsListenerRegistration = db.collection("habits")

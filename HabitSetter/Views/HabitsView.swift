@@ -60,28 +60,31 @@ struct HabitsView: View {
                 //                habits.getHabits()
             }
             
+            
             // Tab 2: List of all habits
             NavigationStack {
-                List(){
-                    ForEach (habitsVM.listOfHabits) { habit in
-                        Text(habit.name)
-                    }
-                }
-                .navigationTitle("All Habits")
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        NavigationLink(destination: AddEditHabitView()) {
-                            Image(systemName: "plus")
+                            List {
+                                ForEach(habitsVM.listOfHabits) { habit in
+                                    Text(habit.name)
+                                }
+                                .onDelete(perform: deleteHabit)  // Swipe-to-delete functionality
+                            }
+                            .navigationTitle("All Habits")
+                            .toolbar {
+                                ToolbarItem(placement: .navigationBarTrailing) {
+                                    NavigationLink(destination: AddEditHabitView()) {
+                                        Image(systemName: "plus")
+                                    }
+                                }
+                            }
                         }
-                        
-                    }
-                }
-            }
-            .tabItem {
-                Label("Habits", systemImage: "list.bullet")
-            }
+                        .tabItem {
+                            Label("Habits", systemImage: "list.bullet")
+                        }
+        
             
             // Tab 3: Profile View
+            // Not sure what to have here yet..
             NavigationStack {
                 Text("Profile Info Here")
                     .navigationTitle("Profile")
@@ -92,6 +95,19 @@ struct HabitsView: View {
         }
     }
     
+    // Function to delete a habit
+    private func deleteHabit(at offsets: IndexSet) {
+        offsets.forEach { index in
+            // Get the habit to be deleted
+            let habit = habitsVM.listOfHabits[index]
+            // Call the remove function in your view model with the habit
+            habitsVM.remove(habit: habit)
+        }
+
+        // Remove from local data array
+        habitsVM.listOfHabits.remove(atOffsets: offsets)
+    }
+
     
 }
 struct HabitCard: View {

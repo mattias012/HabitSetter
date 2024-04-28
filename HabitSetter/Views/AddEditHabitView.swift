@@ -10,7 +10,9 @@ import FirebaseFirestore
 import FirebaseAuth
 
 struct AddEditHabitView: View {
+    
     @Environment(\.presentationMode) var presentationModeAddEdit
+    
     @State private var name: String = ""
     @State private var description: String = ""
     @State private var selectedCategory: HabitCategory = .personal
@@ -24,11 +26,10 @@ struct AddEditHabitView: View {
     
     var habit: Habit?
     
-    //
+    //add environmentobject
     @EnvironmentObject var habitsVM : HabitsViewModel
     
     var body: some View {
-        
         
         NavigationStack {
             Form {
