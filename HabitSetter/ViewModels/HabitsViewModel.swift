@@ -25,6 +25,7 @@ class HabitsViewModel : ObservableObject {
     
     @Published var habitAddedSuccessfully = false
     @Published var habitRemovedSuccessfully = false
+    @Published var habitUpdatedSuccessfully = false
     
     
     deinit {
@@ -82,6 +83,34 @@ class HabitsViewModel : ObservableObject {
                 }
             }
         }
+    }
+    func update(habit: Habit) {
+            guard let habitId = habit.id else {
+                errorMessage = "Error: Habit has no ID"
+                return
+            }
+
+            db.collection("habits").document(habitId).setData([
+                "name": habit.name,
+                "description": habit.description,
+                "category": habit.category.rawValue,  // Assuming category is an enum
+                "interval": habit.interval.rawValue,  // Assuming interval is an enum
+                "imageLink": habit.imageLink,
+                "sendNotification": habit.sendNotification,
+                "userId": habit.userId,
+                "dateCreated": habit.dateCreated,  // Firestore Timestamp
+                "dateEdited": Timestamp(date: Date())  // Current date as Firestore Timestamp
+            ], merge: true) { error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        self.errorMessage = "Error updating habit: \(error.localizedDescription)"
+                        self.habitUpdatedSuccessfully = false
+                    } else {
+                        self.habitUpdatedSuccessfully = true
+                        // Optionally, refresh the local data or trigger other UI updates
+                    }
+                }
+            }
     }
 
     

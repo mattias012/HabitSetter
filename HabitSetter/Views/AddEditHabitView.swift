@@ -24,41 +24,36 @@ struct AddEditHabitView: View {
     let db = Firestore.firestore()
     let auth = Auth.auth()
     
-    var habit: Habit?
+    @Binding var habit: Habit?
     
     //add environmentobject
     @EnvironmentObject var habitsVM : HabitsViewModel
     
     var body: some View {
-        
         NavigationStack {
             Form {
-                VStack {
-                    Section(header: Text("Habit Details")) {
-                        TextField("Habit Name", text: $name)
-                        TextField("Description", text: $description)
-                        Picker("Category", selection: $selectedCategory) {
-                            ForEach(HabitCategory.allCases, id: \.self) { category in
-                                Text(category.rawValue).tag(category)
-                            }
+                Section(header: Text("Habit Details")) {
+                    TextField("Habit Name", text: $name)
+                    TextField("Description", text: $description)
+                    Picker("Category", selection: $selectedCategory) {
+                        ForEach(HabitCategory.allCases, id: \.self) { category in
+                            Text(category.rawValue).tag(category)
                         }
-                        Picker("Interval", selection: $selectedInterval) {
-                            ForEach(HabitInterval.allCases, id: \.self) { interval in
-                                Text(interval == .daily ? "Daily" : "Weekly").tag(interval)
-                            }
-                        }
-                        
-                        TextField("Image URL", text: $imageLink)
-                        Toggle("Send Notification", isOn: $sendNotification)
                     }
+                    Picker("Interval", selection: $selectedInterval) {
+                        ForEach(HabitInterval.allCases, id: \.self) { interval in
+                            //Text(interval.rawValue).tag(interval)
+                        }
+                    }
+                    TextField("Image URL", text: $imageLink)
+                    Toggle("Send Notification", isOn: $sendNotification)
                 }
                 Button("Save") {
-                    habitsVM.errorMessage = nil // Rensa gamla felmeddelanden innan ett nytt försök görs
-                    saveHabit()
+                    saveOrUpdateHabit()
                 }
                 .buttonStyle(.borderedProminent)
             }
-            .navigationTitle(habit == nil ? "Add Habit" : "Edit Habit")
+            .navigationTitle(habit?.id == nil ? "Add Habit" : "Edit Habit")
             .onAppear {
                 loadHabitData()
             }
@@ -71,15 +66,13 @@ struct AddEditHabitView: View {
         .onChange(of: habitsVM.habitAddedSuccessfully) {
             presentationModeAddEdit.wrappedValue.dismiss()
             habitsVM.habitAddedSuccessfully = false
-            
         }
         .onChange(of: habitsVM.errorMessage) {
             showErrorAlert = true
         }
-        
     }
     
-    func loadHabitData() {
+    private func loadHabitData() {
         if let habit = habit {
             name = habit.name
             description = habit.description
@@ -90,29 +83,35 @@ struct AddEditHabitView: View {
         }
     }
     
-    func saveHabit() {
-        // Create a new instance of Habit
-        let newHabit = Habit(
+    private func saveOrUpdateHabit() {
+        // Assuming updatedHabit is created here with possibly new or updated values
+        let updatedHabit = Habit(
+            id: habit?.id, // Use the existing ID, if any
             name: name,
             description: description,
             category: selectedCategory,
             interval: selectedInterval,
-            imageLink: imageLink,          //  default string for image.. perhaps hide it
-            currentStreakID: "",           // streak id later on
-            userId: auth.currentUser?.uid
-            ,                    // Assuming you handle it if it's nil or empty
+            imageLink: imageLink,
+            userId: auth.currentUser?.uid ?? "defaultUser",
             sendNotification: sendNotification,
-            dateCreated: Timestamp(date: Date()),  // Current date
-            dateEdited: Timestamp(date: Date())    // Current date
+            dateCreated: habit?.dateCreated ?? Timestamp(date: Date()), // Use the existing creation date if available
+            dateEdited: Timestamp(date: Date()) // Always update the edited date
         )
-        
-        
-        habitsVM.add(habit: newHabit)
+
+        // Check if the habit already has an ID (meaning it's an update)
+        if let habitId = updatedHabit.id {
+            // Update an existing habit
+            habitsVM.update(habit: updatedHabit)
+        } else {
+            // Create a new habit
+            habitsVM.add(habit: updatedHabit)
+        }
     }
-    
+
 }
 
 
-#Preview {
-    AddEditHabitView()
-}
+
+//#Preview {
+//    AddEditHabitView()
+//}
