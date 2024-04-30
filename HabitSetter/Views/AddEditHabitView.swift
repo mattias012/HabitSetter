@@ -62,10 +62,18 @@ struct AddEditHabitView: View {
             } message: {
                 Text(habitsVM.errorMessage ?? "Unknown error")
             }
-        }
+        }//When a new habit has been entered
         .onChange(of: habitsVM.habitAddedSuccessfully) {
             presentationModeAddEdit.wrappedValue.dismiss()
+            
             habitsVM.habitAddedSuccessfully = false
+            
+        } //in case of updating a habit
+        .onChange(of: habitsVM.habitUpdatedSuccessfully) {
+            presentationModeAddEdit.wrappedValue.dismiss()
+            
+            habitsVM.habitUpdatedSuccessfully = false
+            
         }
         .onChange(of: habitsVM.errorMessage) {
             showErrorAlert = true
@@ -98,12 +106,12 @@ struct AddEditHabitView: View {
             dateEdited: Timestamp(date: Date()) // Always update the edited date
         )
 
-        // Check if the habit already has an ID (meaning it's an update)
-        if let habitId = updatedHabit.id {
+        //Check to see if the habit already has an ID (then it should be an update)
+        if updatedHabit.id != nil {
             // Update an existing habit
             habitsVM.update(habit: updatedHabit)
         } else {
-            // Create a new habit
+            //otherwise letes create a new habit
             habitsVM.add(habit: updatedHabit)
         }
     }
