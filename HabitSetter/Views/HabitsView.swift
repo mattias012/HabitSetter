@@ -14,7 +14,7 @@ struct HabitsView: View {
     @State var habit : Habit?
     
     @State private var showDeleteConfirm = false
-    @State private var indexSetToDelete: IndexSet?
+    @State private var indexSetToDelete: IndexSet? //keep track of the rows in the list
     
     var body: some View {
         TabView {
@@ -64,11 +64,11 @@ struct HabitsView: View {
                 }
                 .onDelete(perform: showDeleteConfirmation)
             }
-            .navigationTitle("All Habits")
-            .alert("Confirm Delete", isPresented: $showDeleteConfirm) {
+            .navigationTitle("All Habits") //menu/title
+            .alert("Confirm Delete", isPresented: $showDeleteConfirm) { //create an alert prior to delete. We send the state of the showDeleteConfirm value to make sure it is not already dispLayed?
                        Button("Cancel", role: .cancel) { }
                        Button("Delete", role: .destructive) {
-                           deleteHabit()
+                           deleteHabit() //if user wants to delete, go ahead with the deletion
                        }
                    } message: {
                        Text("Are you sure you want to delete this habit?")
@@ -121,24 +121,29 @@ struct HabitsView: View {
     
     // Function to delete a habit with a confirmation window
     private func showDeleteConfirmation(at indexSet: IndexSet) {
-            indexSetToDelete = indexSet
-            showDeleteConfirm = true
+            indexSetToDelete = indexSet //save the index to a variable
+            showDeleteConfirm = true //show alert
         }
 
         private func deleteHabit() {
             if let indexSet = indexSetToDelete {
-                // Actually delete the habit
+                //Actually delete the habit
                 indexSet.forEach { index in
                     let habit = habitsVM.listOfHabits[index]
                     habitsVM.remove(habit: habit)
                 }
+                
+                //delete from firestore
                 habitsVM.listOfHabits.remove(atOffsets: indexSet)
+                
+                //restore variables after deletion is complete
                 indexSetToDelete = nil
                 showDeleteConfirm = false
             }
         }
 }
 
+//This is my habit card, perhaps move it outside of this file?
 struct HabitCard: View {
     var habit: Habit
     

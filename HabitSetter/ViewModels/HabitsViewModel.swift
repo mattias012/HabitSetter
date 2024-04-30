@@ -41,10 +41,11 @@ class HabitsViewModel : ObservableObject {
             currentUserId = auth.currentUser?.uid ?? ""
             
             loadHabits(fromUserId: currentUserId, performed: false)
-            loadPerformedHabits(fromUserId: currentUserId)
+            loadPerformedHabits(fromUserId: currentUserId) //also load completed habits directly?
         }
     }
     
+    //add habit to firestore
     func add(habit: Habit) {
         do {
             try db.collection("habits").addDocument(from: habit) { [weak self] error in
@@ -64,6 +65,8 @@ class HabitsViewModel : ObservableObject {
             }
         }
     }
+    
+    //Delete the habit from firestore
     func remove(habit: Habit) {
         guard let habitId = habit.id else {
             DispatchQueue.main.async {
@@ -84,6 +87,8 @@ class HabitsViewModel : ObservableObject {
             }
         }
     }
+    
+    //Update habit in Firestore
     func update(habit: Habit) {
             guard let habitId = habit.id else {
                 errorMessage = "Error: Habit has no ID"
@@ -93,13 +98,13 @@ class HabitsViewModel : ObservableObject {
             db.collection("habits").document(habitId).setData([
                 "name": habit.name,
                 "description": habit.description,
-                "category": habit.category.rawValue,  // Assuming category is an enum
-                "interval": habit.interval.rawValue,  // Assuming interval is an enum
+                "category": habit.category.rawValue,  //Assuming category is an enum
+                "interval": habit.interval.rawValue,  //Assuming interval is an enum
                 "imageLink": habit.imageLink,
                 "sendNotification": habit.sendNotification,
                 "userId": habit.userId,
-                "dateCreated": habit.dateCreated,  // Firestore Timestamp
-                "dateEdited": Timestamp(date: Date())  // Current date as Firestore Timestamp
+                "dateCreated": habit.dateCreated,  //Firestore Timestamp
+                "dateEdited": Timestamp(date: Date())  //Current date as Firestore Timestamp
             ], merge: true) { error in
                 DispatchQueue.main.async {
                     if let error = error {
@@ -107,13 +112,13 @@ class HabitsViewModel : ObservableObject {
                         self.habitUpdatedSuccessfully = false
                     } else {
                         self.habitUpdatedSuccessfully = true
-                        // Optionally, refresh the local data or trigger other UI updates
+                        //add a toast or similar to show that the habit was updated?
                     }
                 }
             }
     }
 
-    
+    //Get all habits not completeed
     func loadHabits(fromUserId: String, performed: Bool) {
         habitsListenerRegistration = db.collection("habits")
             .whereField("userId", isEqualTo: fromUserId)
@@ -137,6 +142,7 @@ class HabitsViewModel : ObservableObject {
                 }
             }
     }
+    //Get performed habits (as of now, a seperate function)
     func loadPerformedHabits(fromUserId: String) {
         performedHabitsListenerRegistration = db.collection("habits")
             .whereField("userId", isEqualTo: fromUserId)
