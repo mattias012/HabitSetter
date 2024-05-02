@@ -19,9 +19,19 @@ struct SignInView : View {
     @FocusState private var isEmailFocused: Bool
     @FocusState private var isPasswordFocused: Bool
     
+    @State private var showingSignUp = false  //State to show SignUp Sheet
+    
     var body: some View {
         
         VStack {
+            HStack {
+                    Spacer() // Skjuter allt till höger
+                    Button("Sign up") {
+                        showingSignUp = true
+                    }
+                    .padding()
+                    .foregroundColor(Color.blue)
+                }
             Spacer()
             
             Text("Welcome, please sign in")
@@ -65,11 +75,16 @@ struct SignInView : View {
         }
         .padding()
         
-                .onAppear {
-                    if Auth.auth().currentUser != nil {
-                        signedIn = true
-                    }
-                }
+        .sheet(isPresented: $showingSignUp) {
+            SignUpView(signedIn: $signedIn, isLoading: $isLoading, showingSignUp: $showingSignUp)
+                         //lets sign up then..
+        }
+               
+//        .onAppear {
+//            if Auth.auth().currentUser != nil {
+//                signedIn = true
+//            }
+//        }
         
     }
     
@@ -79,9 +94,10 @@ struct SignInView : View {
         auth.signIn(withEmail: email, password: password) { result, error in
             isLoading = false  //hide progress view
             if let error = error {
-                print("Error signing in: \(error)")
+                
             } else {
                 signedIn = true
+                SessionManager.shared.currentUserId = auth.currentUser?.uid
             }
         }
     }

@@ -12,12 +12,12 @@ import Firebase
 struct ContentView: View {
     
     @State var signedIn = false //Remember the state, we need to keep track of it
-    @State private var isLoading = false  // Lägg till denna rad
+    @State private var isLoading = false  //is progressview loading
     
     
     var body: some View {
         
-        //add group to allow if statement of views
+        //add group to allow if statement of views?
         Group {
             if isLoading {
                 //show loading progress view incicator
@@ -27,7 +27,7 @@ struct ContentView: View {
             } else if !signedIn {
                 SignInView(signedIn: $signedIn, isLoading: $isLoading)
             } else {
-                HabitsView()
+                HabitsView(signedIn: $signedIn)
             }
         }
     }

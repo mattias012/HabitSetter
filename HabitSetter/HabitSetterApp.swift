@@ -18,11 +18,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct HabitSetterApp: App {
+    
+    @StateObject var habitsVM = HabitsViewModel() // Initialized here
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(habitsVM) // Pass the initialized ViewModel
         }
     }
 }
+
+extension Notification.Name {
+    static let didUpdateUserId = Notification.Name("didUpdateUserId")
+    static let didLogOut = Notification.Name("didLogOut")
+}
+
