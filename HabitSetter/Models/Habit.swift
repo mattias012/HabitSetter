@@ -38,48 +38,48 @@ struct Habit: Codable, Identifiable {
     var imageLink: String?
     var currentStreakID: String?
     var userId: String?
-    var performed: Bool = false
+    var performed: Date?
     var sendNotification: Bool = true
 
-    var dateCreated: Timestamp = Timestamp(date: Date())  // standard value current time
-    var dateEdited: Timestamp = Timestamp(date: Date())    // standard value current time
+    var dateCreated: Timestamp = Timestamp(date: Date())  //standard value current time
+    var dateEdited: Timestamp = Timestamp(date: Date())    //standard value current time
     
     
     //Normal constructor
     init(id: String? = nil,
-             name: String,
-             description: String,
-             category: HabitCategory,
-             interval: HabitInterval,
-             lastPerformed: Date? = nil,
-             imageLink: String? = nil,
-             currentStreakID: String? = nil,
-             userId: String? = nil,
-             performed: Bool = false,
-             sendNotification: Bool,
-             dateCreated: Timestamp,
-             dateEdited: Timestamp) {
-            self.id = id
-            self.name = name
-            self.description = description
-            self.category = category
-            self.interval = interval
-            self.lastPerformed = lastPerformed
-            self.imageLink = imageLink
-            self.currentStreakID = currentStreakID
-            self.userId = userId
-            self.performed = performed
-            self.sendNotification = sendNotification
-            self.dateCreated = dateCreated
-            self.dateEdited = dateEdited
+         name: String,
+         description: String,
+         category: HabitCategory,
+         interval: HabitInterval,
+         lastPerformed: Date? = nil,
+         imageLink: String? = nil,
+         currentStreakID: String? = nil,
+         userId: String? = nil,
+         performed: Date? = nil,
+         sendNotification: Bool,
+         dateCreated: Timestamp,
+         dateEdited: Timestamp) {
         
-            //update nextDue to the right date
-            if let lastPerformed = lastPerformed {
-                    self.nextDue = Calendar.current.date(byAdding: .day, value: interval.days(), to: lastPerformed)
-                } else {
-                    self.nextDue = Calendar.current.date(byAdding: .day, value: interval.days(), to: Date())
-            }
-        }
+        //Set to current user
+        self.userId = SessionManager.shared.currentUserId ?? userId 
+
+        self.id = id
+        self.name = name
+        self.description = description
+        self.category = category
+        self.interval = interval
+        self.lastPerformed = lastPerformed
+        self.imageLink = imageLink
+        self.currentStreakID = currentStreakID
+        self.performed = performed
+        self.sendNotification = sendNotification
+        self.dateCreated = dateCreated
+        self.dateEdited = dateEdited
+
+        //Initially we set nextDue to today's date, ignoring interval since it will be nicer to see all the habits you have added.. i'm I right?
+        self.nextDue = Calendar.current.startOfDay(for: Date())
+    }
+
     
     //Extra init to convert from Firestore needed
     init(from decoder: Decoder) throws {
@@ -94,7 +94,7 @@ struct Habit: Codable, Identifiable {
         imageLink = try container.decodeIfPresent(String.self, forKey: .imageLink)
         currentStreakID = try container.decodeIfPresent(String.self, forKey: .currentStreakID)
         userId = try container.decodeIfPresent(String.self, forKey: .userId)
-        performed = try container.decode(Bool.self, forKey: .performed)
+        performed = try container.decodeIfPresent(Date.self, forKey: .performed)
         sendNotification = try container.decode(Bool.self, forKey: .sendNotification)
         dateCreated = try container.decode(Timestamp.self, forKey: .dateCreated)
         dateEdited = try container.decode(Timestamp.self, forKey: .dateEdited)

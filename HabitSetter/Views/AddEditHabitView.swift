@@ -42,9 +42,11 @@ struct AddEditHabitView: View {
                     }
                     Picker("Interval", selection: $selectedInterval) {
                         ForEach(HabitInterval.allCases, id: \.self) { interval in
-                            //Text(interval.rawValue).tag(interval)
+                            Text("\(interval.days()) days").tag(interval)
                         }
                     }
+                    .pickerStyle(SegmentedPickerStyle())
+                    
                     TextField("Image URL", text: $imageLink)
                     Toggle("Send Notification", isOn: $sendNotification)
                 }
@@ -100,7 +102,7 @@ struct AddEditHabitView: View {
             category: selectedCategory,
             interval: selectedInterval,
             imageLink: imageLink,
-            userId: auth.currentUser?.uid ?? "defaultUser",
+            userId: SessionManager.shared.currentUserId,
             sendNotification: sendNotification,
             dateCreated: habit?.dateCreated ?? Timestamp(date: Date()), // Use the existing creation date if available
             dateEdited: Timestamp(date: Date()) // Always update the edited date

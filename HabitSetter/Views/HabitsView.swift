@@ -167,7 +167,7 @@ struct HabitsView: View {
             NotificationCenter.default.post(name: .didLogOut, object: nil)
             
         } catch let signOutError {
-            print("Error signing out: \(signOutError)")
+           print(signOutError)
         }
     }
 }
