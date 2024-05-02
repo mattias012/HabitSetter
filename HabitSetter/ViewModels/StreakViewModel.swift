@@ -18,7 +18,7 @@ class StreakViewModel : ObservableObject {
         
         let streaksCollection = db.collection("streaks")
         
-        // Sök efter befintlig streak för den vanan
+        //Search for habit streak
         streaksCollection.whereField("userId", isEqualTo: userId)
             .whereField("habitId", isEqualTo: habitId)
             .getDocuments { (snapshot, error) in
@@ -33,9 +33,12 @@ class StreakViewModel : ObservableObject {
                         self.handleUndoAction(for: document, with: performedDate)
                     } else {
                         //update or create a new streak
+                        
+                       
                         self.updateOrCreateStreak(document: document, habit: habit, performedDate: performedDate)
                     }
                 } else if !isUndo {
+                    
                     //Ok so it is not an undo action, lets create a streak
                     self.createStreak(for: habit, performedDate: performedDate)
                 }
@@ -44,21 +47,45 @@ class StreakViewModel : ObservableObject {
 
     private func updateOrCreateStreak(document: DocumentSnapshot, habit: Habit, performedDate: Date) {
         
+        //Set the snapshot to a variabel
         var existingStreak = try? document.data(as: Streak.self)
-        existingStreak?.lastDayPerformed = performedDate
-        existingStreak?.currentStreakCount += 1  //update count
         
-        if let streak = existingStreak {
-            document.reference.updateData([
-                "lastDayPerformed": streak.lastDayPerformed,
-                "currentStreakCount": streak.currentStreakCount
-            ])
+        //Check if the habit's interval aligns with the streak
+        let intervalMatches = habit.interval.days() == (existingStreak?.interval.days() ?? 0)
+        
+        // Check if the performed date falls within the streak's interval
+        let performedDateWithinInterval = isPerformedDateWithinInterval(performedDate, lastPerformed: existingStreak?.lastDayPerformed ?? Date(), interval: habit.interval)
+        
+        // Update streak only if interval matches and performed date falls within interval
+        if intervalMatches && performedDateWithinInterval {
+            existingStreak?.lastDayPerformed = performedDate
+            existingStreak?.currentStreakCount += 1
+            
+            if let streak = existingStreak {
+                document.reference.updateData([
+                    "lastDayPerformed": streak.lastDayPerformed,
+                    "currentStreakCount": streak.currentStreakCount
+                ])
+            }
         }
     }
 
+    //Make sure it is a streak
+    private func isPerformedDateWithinInterval(_ performedDate: Date, lastPerformed: Date, interval: HabitInterval) -> Bool {
+        let calendar = Calendar.current
+        let lowerBound = calendar.date(byAdding: .day, value: -interval.days(), to: lastPerformed)!
+        let upperBound = lastPerformed
+        
+        let result = performedDate >= lowerBound && performedDate <= upperBound
+        
+        return result
+    }
+
+
+
     private func handleUndoAction(for document: DocumentSnapshot, with performedDate: Date) {
         if var streak = try? document.data(as: Streak.self), streak.lastDayPerformed == performedDate {
-            // Antag att vi bara minskar om den senast utförda dagen är samma som angiven dag
+            //reduce by 1, if this is the first streak it wil be 0... hm..
             streak.currentStreakCount = max(streak.currentStreakCount - 1, 0)
             document.reference.updateData([
                 "currentStreakCount": streak.currentStreakCount
@@ -81,8 +108,7 @@ class StreakViewModel : ObservableObject {
         do {
             try streaksCollection.addDocument(from: newStreak)
         } catch let error {
-            print("Error adding new streak: \(error.localizedDescription)")
-            // Hantera fel, t.ex. genom att visa ett felmeddelande till användaren
+            //need to handle error..
         }
     }
 
