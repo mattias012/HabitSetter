@@ -4,6 +4,7 @@ import FirebaseFirestore
 
 class UserViewModel: ObservableObject {
     
+    //Observer these
     @Published var name: String = ""
     @Published var email: String = ""
     @Published var password: String = ""
@@ -17,7 +18,7 @@ class UserViewModel: ObservableObject {
     //register user
     func registerUser(completion: @escaping (Bool) -> Void) {
         guard validateInput() else {
-            completion(false) // Om validering misslyckas, returnera omedelbart
+            completion(false) //validate, return if something is not correct
             return
         }
 
@@ -42,12 +43,20 @@ class UserViewModel: ObservableObject {
                 return
             }
 
-            // Skapa användardokument i Firestore och hantera fortsättningen via callback
-            self.createUserDocument(uid: uid, completion: completion)
+            //Create user in authentication, set sessionmanager to currentuserID otherwise ID will apperantly not follow otherwise
+            //callback when this is complete, then we can go ahead with createUserDocument
+            self.createUserDocument(uid: uid, completion: { success in
+                if success {
+                    SessionManager.shared.currentUserId = uid
+                    completion(true)
+                } else {
+                    completion(false)
+                }
+            })
         }
     }
 
-    // Uppdaterad createUserDocument för att inkludera callback
+    //Create user and also include a callback for when it is complete
     private func createUserDocument(uid: String, completion: @escaping (Bool) -> Void) {
         let user = User(name: name, email: email, favouriteQoute: favouriteQoute, userId: uid)
 
