@@ -163,6 +163,9 @@ struct HabitsView: View {
         do {
             try Auth.auth().signOut()
             signedIn = false  //update auth state
+            SessionManager.shared.currentUserId = nil  // reset session manager user ID
+            NotificationCenter.default.post(name: .didLogOut, object: nil)
+            
         } catch let signOutError {
             print("Error signing out: \(signOutError)")
         }

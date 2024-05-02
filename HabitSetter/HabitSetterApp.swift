@@ -33,5 +33,6 @@ struct HabitSetterApp: App {
 
 extension Notification.Name {
     static let didUpdateUserId = Notification.Name("didUpdateUserId")
+    static let didLogOut = Notification.Name("didLogOut")
 }
 

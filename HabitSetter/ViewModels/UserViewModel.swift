@@ -14,6 +14,7 @@ class UserViewModel: ObservableObject {
     @Published var showingAlert: Bool = false
 
     var db = Firestore.firestore()
+    var auth = Auth.auth()
 
     //register user
     func registerUser(completion: @escaping (Bool) -> Void) {
@@ -22,7 +23,7 @@ class UserViewModel: ObservableObject {
             return
         }
 
-        Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
+        auth.createUser(withEmail: email, password: password) { [weak self] authResult, error in
             guard let self = self else { return }
 
             if let error = error {

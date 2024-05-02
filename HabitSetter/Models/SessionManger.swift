@@ -12,6 +12,7 @@ class SessionManager {
     var currentUserId: String? {
         didSet {
             NotificationCenter.default.post(name: .didUpdateUserId, object: nil)
+            NotificationCenter.default.post(name: .didLogOut, object: nil)
         }
     }
 }

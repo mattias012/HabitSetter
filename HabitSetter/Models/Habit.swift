@@ -9,18 +9,21 @@ import Foundation
 import FirebaseFirestore
 import FirebaseFirestoreSwift
 
-// Definierar kategorierna som en enum för bättre typsäkerhet.
+//define categories
 enum HabitCategory: String, Codable, CaseIterable {
  
-    
     case work = "Work"
     case personal = "Personal"
 }
 
-// Definierar intervallet för utförande som en enum.
+//define enums
 enum HabitInterval: Int, Codable, CaseIterable {
     case daily = 1
     case weekly = 7
+    
+    func days() -> Int {
+        return self.rawValue
+    }
 }
 
 struct Habit: Codable, Identifiable {
@@ -31,6 +34,7 @@ struct Habit: Codable, Identifiable {
     var category: HabitCategory  // enum
     var interval: HabitInterval  // enum
     var lastPerformed: Date?
+    var nextDue: Date?
     var imageLink: String?
     var currentStreakID: String?
     var userId: String?
@@ -68,9 +72,16 @@ struct Habit: Codable, Identifiable {
             self.sendNotification = sendNotification
             self.dateCreated = dateCreated
             self.dateEdited = dateEdited
+        
+            //update nextDue to the right date
+            if let lastPerformed = lastPerformed {
+                    self.nextDue = Calendar.current.date(byAdding: .day, value: interval.days(), to: lastPerformed)
+                } else {
+                    self.nextDue = Calendar.current.date(byAdding: .day, value: interval.days(), to: Date())
+            }
         }
     
-    // En extra initialisator to convert from Firestore.
+    //Extra init to convert from Firestore needed
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decodeIfPresent(String.self, forKey: .id)
@@ -79,6 +90,7 @@ struct Habit: Codable, Identifiable {
         category = try container.decode(HabitCategory.self, forKey: .category)
         interval = try container.decode(HabitInterval.self, forKey: .interval)
         lastPerformed = try container.decodeIfPresent(Date.self, forKey: .lastPerformed)
+        nextDue = try container.decodeIfPresent(Date.self, forKey: .nextDue)
         imageLink = try container.decodeIfPresent(String.self, forKey: .imageLink)
         currentStreakID = try container.decodeIfPresent(String.self, forKey: .currentStreakID)
         userId = try container.decodeIfPresent(String.self, forKey: .userId)
