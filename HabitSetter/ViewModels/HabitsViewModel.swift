@@ -29,6 +29,8 @@ class HabitsViewModel : ObservableObject {
     @Published var habitRemovedSuccessfully = false
     @Published var habitUpdatedSuccessfully = false
     
+    @Published var streakVM = StreakViewModel()
+    
     let calendar = Calendar.current
     
     deinit {
@@ -42,9 +44,10 @@ class HabitsViewModel : ObservableObject {
         
         //On start load all habits from firestore with the correct user data
         NotificationCenter.default.addObserver(self, selector: #selector(handleUserChange), name: .didUpdateUserId, object: nil)
+        
         if let uid = SessionManager.shared.currentUserId {
-                self.currentUserId = uid
-                self.loadHabits()
+            self.currentUserId = uid
+            self.loadHabits()
         }
     }
     
@@ -56,8 +59,8 @@ class HabitsViewModel : ObservableObject {
     }
     
     private func loadHabits() {
-        loadNotPerformedHabits(fromUserId: currentUserId, performed: false)
-        loadPerformedHabits(fromUserId: currentUserId, performed: true)
+        loadNotPerformedHabits(fromUserId: currentUserId)
+        loadPerformedHabits(fromUserId: currentUserId)
         loadAllHabits(fromUserId: currentUserId)
     }
     
@@ -106,18 +109,15 @@ class HabitsViewModel : ObservableObject {
     
     //Update habit in Firestore
     func update(habit: Habit) {
-        guard let habitId = habit.id else {
-            errorMessage = "Error: Habit has no ID"
-            return
-        }
+        guard let habitId = habit.id else { return }
         guard let habitImageLink = habit.imageLink else { return }
         guard let habitUserId = habit.userId else { return }
         
         db.collection("habits").document(habitId).setData([
             "name": habit.name,
             "description": habit.description,
-            "category": habit.category.rawValue,  //Assuming category is an enum
-            "interval": habit.interval.rawValue,  //Assuming interval is an enum
+            "category": habit.category.rawValue,
+            "interval": habit.interval.rawValue,
             "imageLink": habitImageLink,
             "sendNotification": habit.sendNotification,
             "userId": habitUserId,
@@ -138,15 +138,12 @@ class HabitsViewModel : ObservableObject {
     
     //Get all habits not completed for day
     //Make sure to only pick the ones with nextDue on todays date.
-    func loadNotPerformedHabits(fromUserId: String, performed: Bool) {
-        
-        let startOfDay = calendar.startOfDay(for: Date()) //Gets today's date at midnight
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)! //Gets the end of today
+    func loadNotPerformedHabits(fromUserId: String) {
+        let startOfDay = calendar.startOfDay(for: Date())  // Today at midnight
         
         habitsListenerRegistration = db.collection("habits")
             .whereField("userId", isEqualTo: fromUserId)
-            .whereField("performed", isEqualTo: performed)
-            .whereField("nextDue", isLessThanOrEqualTo: endOfDay)
+            .whereField("nextDue", isLessThanOrEqualTo: startOfDay)
             .addSnapshotListener { [weak self] snapshot, error in
                 DispatchQueue.main.async {
                     guard let self = self else { return }
@@ -157,15 +154,21 @@ class HabitsViewModel : ObservableObject {
                     }
                     
                     self.listOfNotPerformedHabits = snapshot?.documents.compactMap { document in
-                        var habit = try? document.data(as: Habit.self)
-                        habit?.id = document.documentID // make sure ID is correct
-
-                        return habit
+                        if var habit = try? document.data(as: Habit.self) {
+                            habit.id = document.documentID  // Assign the ID to our mutable habit
+                            // Check if the habit was performed today
+                            if let performedDate = habit.performed, self.calendar.isDate(performedDate, inSameDayAs: startOfDay) {
+                                return nil  // Skip this habit as it was already performed today
+                            }
+                            return habit  // Include this habit as it has not been performed today
+                        }
+                        return nil
                     } ?? []
-                    
                 }
             }
     }
+    
+    
     func loadAllHabits(fromUserId: String) {
         habitsAllListenerRegistration = db.collection("habits")
             .whereField("userId", isEqualTo: fromUserId)
@@ -178,6 +181,7 @@ class HabitsViewModel : ObservableObject {
                         return
                     }
                     
+                    //compactmap is new for me..
                     self.listOfAllHabits = snapshot?.documents.compactMap { document in
                         var habit = try? document.data(as: Habit.self)
                         habit?.id = document.documentID //make sure ID is correct
@@ -189,16 +193,14 @@ class HabitsViewModel : ObservableObject {
             }
     }
     //Get performed habits (as of now, a seperate function)
-    func loadPerformedHabits(fromUserId: String, performed: Bool) {
-        
-        let startOfDay = calendar.startOfDay(for: Date()) //Gets today's date at midnight
-        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)! //Gets the end of today
+    func loadPerformedHabits(fromUserId: String) {
+        let startOfDay = calendar.startOfDay(for: Date()) // Today at midnight
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return }
         
         performedHabitsListenerRegistration = db.collection("habits")
             .whereField("userId", isEqualTo: fromUserId)
-            .whereField("performed", isEqualTo: performed)
-            .whereField("lastPerformed", isGreaterThanOrEqualTo: startOfDay)
-            .whereField("lastPerformed", isLessThan: endOfDay)
+            .whereField("performed", isGreaterThanOrEqualTo: startOfDay)
+            .whereField("performed", isLessThan: endOfDay)
             .addSnapshotListener { [weak self] snapshot, error in
                 DispatchQueue.main.async {
                     guard let self = self else { return }
@@ -208,68 +210,82 @@ class HabitsViewModel : ObservableObject {
                         return
                     }
                     
-                    //Compactmap is something new for me..
                     self.listOfPerformedHabits = snapshot?.documents.compactMap { document in
-                        var habit = try? document.data(as: Habit.self)
-                        habit?.id = document.documentID
-                        return habit
+                        if var habit = try? document.data(as: Habit.self) {
+                            habit.id = document.documentID  // Set the document ID to the habit
+                            return habit
+                        }
+                        return nil
                     } ?? []
                 }
             }
     }
     
+    
+    //Handle all toggle functions (streak and completed habits)
     func toggleHabitStatus(of habit: Habit) {
-        
-        let newStatus = !habit.performed //opposite of what is right now
-        guard let habitId = habit.id  else { return } //lets guard in case of nil
+        guard let habitId = habit.id else { return }
         
         let habitRef = db.collection("habits").document(habitId)
-        
-        //Calculate new nextDue date
-        //Determine new nextDue date based on whether the habit is being marked performed or undone
-            let newNextDue: Date
-            if newStatus {
-                //If marking as performed, set next due date to future based on interval in Habit category
-                newNextDue = calculateNextDueDate(from: Date(), interval: habit.interval)
-            } else {
-                //trying to catch if a habit is undone..calculate previous due date based on interval, best way?
-                newNextDue = calculatePreviousDueDate(from: Date(), interval: habit.interval)
-            }
-        
-        //Update the habit in Firestore
+        let today = Calendar.current.startOfDay(for: Date())
+
+        //Check if the habit was performed today already
+        let wasPerformedToday: Bool
+        if let performedDate = habit.performed {
+            wasPerformedToday = Calendar.current.isDate(performedDate, inSameDayAs: today)
+        } else {
+            wasPerformedToday = false
+        }
+
+        //Lets update status depending if the habit is in the bottom or top section (performed or not)
+        let newStatus: Date?
+        let newNextDue: Date
+        if wasPerformedToday {
+
+            //ok so this is an undo action, we need to set date to nil to indicate that this habit has not been performed
+            newStatus = nil
+            newNextDue = today  //next due is back to todays date
+            
+            //also, this affect the streak for this habit, lets undo that as well
+            streakVM.addOrUpdateStreak(habit: habit, performedDate: today, isUndo: true)
+        } else {
+            //was not perform already, new status update
+            newStatus = today
+            newNextDue = calculateNextDueDate(from: today, interval: habit.interval)
+            //update or create streak
+            streakVM.addOrUpdateStreak(habit: habit, performedDate: today, isUndo: false)
+        }
+
+        //update firestore
         habitRef.updateData([
-            "performed": newStatus,
-            "nextDue": newNextDue
+            "performed": newStatus ?? FieldValue.delete(),
+            "nextDue": newNextDue,
+            "lastPerformed": today
         ]) { err in
             if let err = err {
-                print("Error updating document: \(err)")
-                }
-                else {
-                    print("Document successfully updated")
-                    //Update local lists to reflect changes
-                    self.updateLocalHabitsList(habit: habit, newStatus: newStatus, newNextDue: newNextDue)
-                }
+                print("Error updating habit: \(err)")
+            } else {
+                self.updateLocalHabitsList(habit: habit, newPerformedDate: newStatus, newNextDue: newNextDue)
             }
         }
-    
-    
+    }
+
     func calculateNextDueDate(from date: Date, interval: HabitInterval) -> Date {
         let calendar = Calendar.current
         return calendar.date(byAdding: .day, value: interval.days(), to: date)!
     }
-
+    
     func calculatePreviousDueDate(from date: Date, interval: HabitInterval) -> Date {
         let calendar = Calendar.current
         return calendar.date(byAdding: .day, value: -interval.days(), to: date)!
     }
-    func updateLocalHabitsList(habit: Habit, newStatus: Bool, newNextDue: Date) {
-        // Assume there are two lists: one for performed and one for not performed habits
+    func updateLocalHabitsList(habit: Habit, newPerformedDate: Date?, newNextDue: Date) {
         if let index = self.listOfNotPerformedHabits.firstIndex(where: { $0.id == habit.id }) {
-            self.listOfNotPerformedHabits[index].performed = newStatus
+            self.listOfNotPerformedHabits[index].performed = newPerformedDate
             self.listOfNotPerformedHabits[index].nextDue = newNextDue
         }
         if let index = self.listOfPerformedHabits.firstIndex(where: { $0.id == habit.id }) {
-            self.listOfPerformedHabits[index].performed = newStatus
+            self.listOfPerformedHabits[index].performed = newPerformedDate
             self.listOfPerformedHabits[index].nextDue = newNextDue
         }
     }
