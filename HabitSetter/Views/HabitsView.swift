@@ -46,6 +46,9 @@ struct HabitsView: View {
                             .frame(maxHeight: 160)
                             .padding(.horizontal, -5)
                             .listRowInsets(EdgeInsets())
+                            .onTapGesture {
+                                habitsVM.toggleHabitStatus(of: habit)
+                            }
                     }
                     
                 }
@@ -178,7 +181,7 @@ struct HabitCard: View {
     var habit: Habit
     
     var body: some View {
-        VStack {
+        
             HStack(alignment: .top, spacing: 10) {
                 VStack(alignment: .leading) {
                     Image("habit")
@@ -200,10 +203,8 @@ struct HabitCard: View {
                 }
                 Spacer()
             }
-        }
-        .onTapGesture {
-            habitsVM.toggleHabitStatus(of: habit)
-        }
+        
+      
         .padding()
         .frame(maxWidth: .infinity)
         .background(Color.white)

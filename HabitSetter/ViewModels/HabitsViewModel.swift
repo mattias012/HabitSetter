@@ -29,6 +29,8 @@ class HabitsViewModel : ObservableObject {
     @Published var habitRemovedSuccessfully = false
     @Published var habitUpdatedSuccessfully = false
     
+    @Published var streakVM = StreakViewModel()
+    
     let calendar = Calendar.current
     
     deinit {
@@ -220,45 +222,54 @@ class HabitsViewModel : ObservableObject {
     }
     
     
+    //Handle all toggle functions (streak and completed habits)
     func toggleHabitStatus(of habit: Habit) {
-        guard let habitId = habit.id else { return } // Ensure the habit has an ID
+        guard let habitId = habit.id else { return }
         
         let habitRef = db.collection("habits").document(habitId)
-        
-        // Today's date at midnight
         let today = Calendar.current.startOfDay(for: Date())
-        
-        // Determine if the habit was marked as performed today
-        let wasPerformedToday = (habit.performed != nil && Calendar.current.isDate(habit.performed!, inSameDayAs: today))
-        
-        // Determine the new status and the next due date based on the current status
+
+        //Check if the habit was performed today already
+        let wasPerformedToday: Bool
+        if let performedDate = habit.performed {
+            wasPerformedToday = Calendar.current.isDate(performedDate, inSameDayAs: today)
+        } else {
+            wasPerformedToday = false
+        }
+
+        //Lets update status depending if the habit is in the bottom or top section (performed or not)
         let newStatus: Date?
         let newNextDue: Date
         if wasPerformedToday {
-            // If the habit was performed today, we are marking it as not performed
+
+            //ok so this is an undo action, we need to set date to nil to indicate that this habit has not been performed
             newStatus = nil
-            newNextDue = today  //Reset the next due to today (or logic for undone)
+            newNextDue = today  //next due is back to todays date
+            
+            //also, this affect the streak for this habit, lets undo that as well
+            streakVM.addOrUpdateStreak(habit: habit, performedDate: today, isUndo: true)
         } else {
-            // If the habit was not performed today, we are marking it as performed today
+            //was not perform already, new status update
             newStatus = today
             newNextDue = calculateNextDueDate(from: today, interval: habit.interval)
+            //update or create streak
+            streakVM.addOrUpdateStreak(habit: habit, performedDate: today, isUndo: false)
         }
-        
-        //Update the habit in Firestore
+
+        //update firestore
         habitRef.updateData([
-            "performed": newStatus ?? FieldValue.delete(), // Use FieldValue.delete() to remove the field if nil
+            "performed": newStatus ?? FieldValue.delete(),
             "nextDue": newNextDue,
             "lastPerformed": today
         ]) { err in
             if let err = err {
-                
+                print("Error updating habit: \(err)")
             } else {
-                //Update local lists to reflect changes
                 self.updateLocalHabitsList(habit: habit, newPerformedDate: newStatus, newNextDue: newNextDue)
             }
         }
     }
-    
+
     func calculateNextDueDate(from date: Date, interval: HabitInterval) -> Date {
         let calendar = Calendar.current
         return calendar.date(byAdding: .day, value: interval.days(), to: date)!
