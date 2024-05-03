@@ -47,7 +47,7 @@ struct HabitsView: View {
             VStack {
                 List {
                     ForEach(habitsVM.listOfNotPerformedHabits) { habit in
-                        HabitCard(habitsVM: habitsVM, habit: habit)
+                        HabitCard(streakVM: streakVM, habitsVM: habitsVM, habit: habit)
                             .frame(maxHeight: 160)
                             .padding(.horizontal, -5)
                             .listRowInsets(EdgeInsets())
@@ -185,96 +185,8 @@ struct HabitsView: View {
         }
     }
 }
-
-//This is my habit card, perhaps move it outside of this file?
-struct HabitCard: View {
-    @ObservedObject var habitsVM: HabitsViewModel
-    var habit: Habit
     
-    var body: some View {
-        VStack {
-        HStack(alignment: .center, spacing: 10) {
-            VStack(alignment: .leading) {
-                Image("habit")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 40, height: 40)
-                    .cornerRadius(40)
-            }
-            VStack(alignment: .leading) {
-                Text(habit.name)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                    
-                
-            }
-            Spacer()
-            
-        }
-        Spacer()
-        HStack {
-                if !habit.description.isEmpty {
-                    Text(habit.description)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(nil)
-                }
-                Spacer()
-                ChartView()
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 5)
-        .padding(.horizontal)
-        .padding(.vertical, 5)
-    }
-}
-    
-struct PostCount {
-        var category: String
-        var count: Int
-    }
-    
-struct ChartView: View {
-    let currentStreak: Int = 125 // Exempelvärde
-    let totalDays: Int = 365 // Totalt antal dagar (ett år)
 
-    let result: Int // Beräkna återstående dagar
-    var data: [PostCount] // Array för att lagra data
-
-    init() {
-        result = totalDays - currentStreak // Beräkna result
-        data = [
-            .init(category: "Streak", count: currentStreak),
-            .init(category: "Year", count: result)
-        ] // Initialisera data-arrayen korrekt
-    }
-
-    var body: some View {
-        Chart(data, id: \.category) { item in
-            SectorMark(
-                angle: .value("Count", item.count),
-                innerRadius: .ratio(0.6),
-                angularInset: 2
-            )
-            .foregroundStyle(by: .value("Category", item.category))
-        }
-        .chartBackground { chartProxy in
-          GeometryReader { geometry in
-            if let anchor = chartProxy.plotFrame {
-              let frame = geometry[anchor]
-              Text("\(currentStreak)")
-                .position(x: frame.midX, y: frame.midY)
-            }
-          }
-        }
-        .chartLegend(Visibility.hidden)
-        .scaledToFit()
-    }
-}
 //#Preview {
 //    HabitsView(signedIn: $signedIn)
 //}

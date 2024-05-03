@@ -14,6 +14,8 @@ class StreakViewModel : ObservableObject {
     @Published var showToast: Bool = false
     @Published var toastMessage: String?
     
+    @Published var currentStreak: Int = 0
+    
     private var db = Firestore.firestore()
     
     func addOrUpdateStreak(habit: Habit, performedDate: Date, isUndo: Bool = false) {
@@ -47,7 +49,7 @@ class StreakViewModel : ObservableObject {
                 }
             }
     }
-
+    
     private func updateOrCreateStreak(document: DocumentSnapshot, habit: Habit, performedDate: Date) {
         
         //Set the snapshot to a variabel
@@ -74,7 +76,7 @@ class StreakViewModel : ObservableObject {
         
         //otherwise we do something else?
     }
-
+    
     //Make sure it is a streak
     private func isPerformedDateWithinInterval(_ performedDate: Date, lastPerformed: Date, interval: HabitInterval) -> Bool {
         let calendar = Calendar.current
@@ -85,9 +87,9 @@ class StreakViewModel : ObservableObject {
         
         return result
     }
-
-
-
+    
+    
+    
     private func handleUndoAction(for document: DocumentSnapshot, with performedDate: Date) {
         if var streak = try? document.data(as: Streak.self), streak.lastDayPerformed == performedDate {
             //reduce by 1, if this is the first streak it wil be 0... hm..
@@ -97,13 +99,13 @@ class StreakViewModel : ObservableObject {
             ])
         }
     }
-
+    
     private func createStreak(for habit: Habit, performedDate: Date) {
         
         let streaksCollection = db.collection("streaks")
         // Skapa en ny dokumentreferens
         let newStreakRef = streaksCollection.document()
-
+        
         // Skapa Streak objektet
         let newStreak = Streak(
             userId: habit.userId!,
@@ -113,7 +115,7 @@ class StreakViewModel : ObservableObject {
             currentStreakCount: 1,
             interval: habit.interval
         )
-
+        
         do {
             // Använd referensen för att lägga till data
             try newStreakRef.setData(from: newStreak)
@@ -129,8 +131,8 @@ class StreakViewModel : ObservableObject {
             //error handling.. toast or what is this called in iOS?
         }
     }
-
-
+    
+    
     private func updateHabitWithStreakId(habit: Habit, streakId: String) {
         
         let habitRef = db.collection("habits").document(habit.id!)
@@ -144,4 +146,38 @@ class StreakViewModel : ObservableObject {
             }
         }
     }
+    
+    // Function to fetch the current streak for a habit
+    func getCurrentStreak(habit: Habit, completion: @escaping (Bool) -> Void) {
+        guard let habitId = habit.id, let userId = habit.userId else {
+            completion(false)
+            return
+        }
+        
+        let streaksCollection = db.collection("streaks")
+        
+        streaksCollection
+            .whereField("userId", isEqualTo: userId)
+            .whereField("habitId", isEqualTo: habitId)
+            .getDocuments { snapshot, error in
+                
+                if let error = error {
+                    print("Error fetching streak: \(error)")
+                    completion(false)
+                    return
+                }
+                
+                if let document = snapshot?.documents.first,
+                   let streakCount = document.data()["currentStreakCount"] as? Int {
+                    DispatchQueue.main.async {
+                        self.currentStreak = streakCount
+                        completion(true)
+                    }
+                } else {
+                    completion(false)
+                }
+            }
+    }
 }
+
+

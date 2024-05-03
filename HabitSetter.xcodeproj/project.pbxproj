@@ -29,6 +29,8 @@
 		CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */; };
 		CD01AA032BDA72BE00D1E32D /* AddEditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */; };
 		CD4CBDF02BE252210019CB91 /* SessionManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4CBDEF2BE252210019CB91 /* SessionManger.swift */; };
+		CD81BBF02BE564F8005A0763 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BBEF2BE564F8005A0763 /* ChartView.swift */; };
+		CD81BBF22BE56547005A0763 /* HabitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BBF12BE56547005A0763 /* HabitCard.swift */; };
 		CD9DD0562BE4239F0026A222 /* Streak.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0552BE4239E0026A222 /* Streak.swift */; };
 		CD9DD0582BE426E90026A222 /* StreakViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0572BE426E90026A222 /* StreakViewModel.swift */; };
 		CD9DD0622BE4EC700026A222 /* ToastViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */; };
@@ -72,6 +74,8 @@
 		CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsViewModel.swift; sourceTree = "<group>"; };
 		CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditHabitView.swift; sourceTree = "<group>"; };
 		CD4CBDEF2BE252210019CB91 /* SessionManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManger.swift; sourceTree = "<group>"; };
+		CD81BBEF2BE564F8005A0763 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		CD81BBF12BE56547005A0763 /* HabitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCard.swift; sourceTree = "<group>"; };
 		CD9DD0552BE4239E0026A222 /* Streak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Streak.swift; sourceTree = "<group>"; };
 		CD9DD0572BE426E90026A222 /* StreakViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakViewModel.swift; sourceTree = "<group>"; };
 		CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifier.swift; sourceTree = "<group>"; };
@@ -180,6 +184,8 @@
 				CD01A9F82BD9075F00D1E32D /* HabitsView.swift */,
 				CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */,
 				CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */,
+				CD81BBEF2BE564F8005A0763 /* ChartView.swift */,
+				CD81BBF12BE56547005A0763 /* HabitCard.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -364,9 +370,11 @@
 				CD9DD0622BE4EC700026A222 /* ToastViewModifier.swift in Sources */,
 				CDBB98FE2BE1958B00984E17 /* UserViewModel.swift in Sources */,
 				CD4CBDF02BE252210019CB91 /* SessionManger.swift in Sources */,
+				CD81BBF02BE564F8005A0763 /* ChartView.swift in Sources */,
 				CD01AA032BDA72BE00D1E32D /* AddEditHabitView.swift in Sources */,
 				CD01A9B72BD5B73600D1E32D /* ContentView.swift in Sources */,
 				CDBB98FC2BE1911200984E17 /* User.swift in Sources */,
+				CD81BBF22BE56547005A0763 /* HabitCard.swift in Sources */,
 				CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */,
 				CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */,
 				CD01A9B52BD5B73600D1E32D /* HabitSetterApp.swift in Sources */,
