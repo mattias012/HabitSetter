@@ -13,9 +13,7 @@ class StreakViewModel : ObservableObject {
     
     @Published var showToast: Bool = false
     @Published var toastMessage: String?
-    
-    @Published var currentStreak: Int = 0
-    
+        
     private var db = Firestore.firestore()
     
     func addOrUpdateStreak(habit: Habit, performedDate: Date, isUndo: Bool = false) {
@@ -103,10 +101,10 @@ class StreakViewModel : ObservableObject {
     private func createStreak(for habit: Habit, performedDate: Date) {
         
         let streaksCollection = db.collection("streaks")
-        // Skapa en ny dokumentreferens
+        
         let newStreakRef = streaksCollection.document()
         
-        // Skapa Streak objektet
+        //Create Streak
         let newStreak = Streak(
             userId: habit.userId!,
             habitId: habit.id!,
@@ -117,7 +115,7 @@ class StreakViewModel : ObservableObject {
         )
         
         do {
-            // Använd referensen för att lägga till data
+            //Save
             try newStreakRef.setData(from: newStreak)
             
             //Get this new ID to save it to the habit
@@ -148,36 +146,34 @@ class StreakViewModel : ObservableObject {
     }
     
     // Function to fetch the current streak for a habit
-    func getCurrentStreak(habit: Habit, completion: @escaping (Bool) -> Void) {
-        guard let habitId = habit.id, let userId = habit.userId else {
-            completion(false)
-            return
-        }
-        
-        let streaksCollection = db.collection("streaks")
-        
-        streaksCollection
-            .whereField("userId", isEqualTo: userId)
-            .whereField("habitId", isEqualTo: habitId)
-            .getDocuments { snapshot, error in
-                
-                if let error = error {
-                    print("Error fetching streak: \(error)")
-                    completion(false)
-                    return
-                }
-                
-                if let document = snapshot?.documents.first,
-                   let streakCount = document.data()["currentStreakCount"] as? Int {
-                    DispatchQueue.main.async {
-                        self.currentStreak = streakCount
-                        completion(true)
-                    }
-                } else {
-                    completion(false)
-                }
+    // Fetch the current streak for a specific habit and return it via completion handler
+        func getCurrentStreak(habit: Habit, completion: @escaping (Result<Int, Error>) -> Void) {
+            guard let habitId = habit.id, let userId = habit.userId else {
+                let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid habit or user ID"])
+                completion(.failure(error))
+                return
             }
-    }
+
+            let streaksCollection = db.collection("streaks")
+            
+            streaksCollection
+                .whereField("userId", isEqualTo: userId)
+                .whereField("habitId", isEqualTo: habitId)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        completion(.failure(error))
+                        return
+                    }
+
+                    if let document = snapshot?.documents.first,
+                       let streakCount = document.data()["currentStreakCount"] as? Int {
+                        completion(.success(streakCount))
+                    } else {
+                        let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Streak data not found"])
+                        completion(.failure(error))
+                    }
+                }
+        }
 }
 
 
