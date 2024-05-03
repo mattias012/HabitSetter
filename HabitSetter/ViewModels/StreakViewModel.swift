@@ -11,6 +11,9 @@ import FirebaseFirestoreSwift
 
 class StreakViewModel : ObservableObject {
     
+    @Published var showToast: Bool = false
+    @Published var toastMessage: String?
+    
     private var db = Firestore.firestore()
     
     func addOrUpdateStreak(habit: Habit, performedDate: Date, isUndo: Bool = false) {
@@ -27,14 +30,14 @@ class StreakViewModel : ObservableObject {
                     return
                 }
                 
+                //handle result, get the first document in case of any duplicates (unlikely?)
                 if let documents = snapshot?.documents, let document = documents.first {
                     if isUndo {
                         //we need to handle the undo action..
                         self.handleUndoAction(for: document, with: performedDate)
                     } else {
-                        //update or create a new streak
                         
-                       
+                        //update or create a new streak, we
                         self.updateOrCreateStreak(document: document, habit: habit, performedDate: performedDate)
                     }
                 } else if !isUndo {
@@ -50,13 +53,13 @@ class StreakViewModel : ObservableObject {
         //Set the snapshot to a variabel
         var existingStreak = try? document.data(as: Streak.self)
         
-        //Check if the habit's interval aligns with the streak
+        //Check if the habit's interval aligns with the streak, so if a user changes intervall on a selected habit it can still remain a streak.
         let intervalMatches = habit.interval.days() == (existingStreak?.interval.days() ?? 0)
         
-        // Check if the performed date falls within the streak's interval
+        //After that we check if the performed date falls within the streak's interval (which can have changed)
         let performedDateWithinInterval = isPerformedDateWithinInterval(performedDate, lastPerformed: existingStreak?.lastDayPerformed ?? Date(), interval: habit.interval)
         
-        // Update streak only if interval matches and performed date falls within interval
+        //Update streak only if interval matches and performed date falls within interval
         if intervalMatches && performedDateWithinInterval {
             existingStreak?.lastDayPerformed = performedDate
             existingStreak?.currentStreakCount += 1
@@ -68,6 +71,8 @@ class StreakViewModel : ObservableObject {
                 ])
             }
         }
+        
+        //otherwise we do something else?
     }
 
     //Make sure it is a streak
@@ -94,6 +99,12 @@ class StreakViewModel : ObservableObject {
     }
 
     private func createStreak(for habit: Habit, performedDate: Date) {
+        
+        let streaksCollection = db.collection("streaks")
+        // Skapa en ny dokumentreferens
+        let newStreakRef = streaksCollection.document()
+
+        // Skapa Streak objektet
         let newStreak = Streak(
             userId: habit.userId!,
             habitId: habit.id!,
@@ -102,15 +113,35 @@ class StreakViewModel : ObservableObject {
             currentStreakCount: 1,
             interval: habit.interval
         )
-        
-        let streaksCollection = db.collection("streaks")
-        
+
         do {
-            try streaksCollection.addDocument(from: newStreak)
-        } catch let error {
-            //need to handle error..
+            // Använd referensen för att lägga till data
+            try newStreakRef.setData(from: newStreak)
+            
+            //Get this new ID to save it to the habit
+            let streakId = newStreakRef.documentID
+            
+            //Update habit with streak ID
+            self.updateHabitWithStreakId(habit: habit, streakId: streakId)
+            
+        } catch {
+            
+            //error handling.. toast or what is this called in iOS?
         }
     }
 
 
+    private func updateHabitWithStreakId(habit: Habit, streakId: String) {
+        
+        let habitRef = db.collection("habits").document(habit.id!)
+        habitRef.updateData([
+            "currentStreakID": streakId
+        ]) { err in
+            if let err = err {
+                self.toastMessage = "Error: \(err.localizedDescription)"
+            } else {
+                self.toastMessage = "Good job, keeping the streak alive!"
+            }
+        }
+    }
 }

@@ -31,6 +31,9 @@ class HabitsViewModel : ObservableObject {
     
     @Published var streakVM = StreakViewModel()
     
+    @Published var toastMessage: String? = ""
+
+    
     let calendar = Calendar.current
     
     deinit {
@@ -266,6 +269,7 @@ class HabitsViewModel : ObservableObject {
                 print("Error updating habit: \(err)")
             } else {
                 self.updateLocalHabitsList(habit: habit, newPerformedDate: newStatus, newNextDue: newNextDue)
+                
             }
         }
     }

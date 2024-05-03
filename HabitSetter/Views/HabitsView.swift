@@ -8,11 +8,14 @@
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestoreSwift
+import Charts
 
 
 struct HabitsView: View {
     
     @EnvironmentObject var habitsVM: HabitsViewModel
+    
+    @StateObject var streakVM = StreakViewModel()
     
     @State var habit : Habit?
     
@@ -20,11 +23,13 @@ struct HabitsView: View {
     
     @State private var showDeleteConfirm = false
     @State private var indexSetToDelete: IndexSet? //keep track of the rows in the list
-       
+    
+    
     
     var body: some View {
         
         TabView {
+            
             //Tab 1: Home View
             homeViewTab
             
@@ -47,14 +52,20 @@ struct HabitsView: View {
                             .padding(.horizontal, -5)
                             .listRowInsets(EdgeInsets())
                             .onTapGesture {
+                                
                                 habitsVM.toggleHabitStatus(of: habit)
+                                streakVM.toastMessage = "Good job keeping the streak alive!"
+                                streakVM.showToast = true
                             }
                     }
                     
                 }
                 .listStyle(PlainListStyle())
                 .navigationTitle("Habits for Today")
-                
+            }
+            .toast(isShowing: $streakVM.showToast, message: streakVM.toastMessage)
+            
+            VStack {
                 completedHabitsSection
             }
         }
@@ -170,7 +181,7 @@ struct HabitsView: View {
             NotificationCenter.default.post(name: .didLogOut, object: nil)
             
         } catch let signOutError {
-           print(signOutError)
+            print(signOutError)
         }
     }
 }
@@ -182,29 +193,28 @@ struct HabitCard: View {
     
     var body: some View {
         
-            HStack(alignment: .top, spacing: 10) {
-                VStack(alignment: .leading) {
-                    Image("habit")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 60)
-                        .cornerRadius(40)
-                }
-                VStack(alignment: .leading) {
-                    Text(habit.name)
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    if !habit.description.isEmpty {
-                        Text(habit.description)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .lineLimit(nil)
-                    }
-                }
-                Spacer()
+        HStack(alignment: .top, spacing: 10) {
+            VStack(alignment: .leading) {
+                Image("habit")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60, height: 60)
+                    .cornerRadius(40)
             }
-        
-      
+            VStack(alignment: .leading) {
+                Text(habit.name)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                if !habit.description.isEmpty {
+                    Text(habit.description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(nil)
+                }
+            }
+            Spacer()
+            ChartView()
+        }
         .padding()
         .frame(maxWidth: .infinity)
         .background(Color.white)
@@ -214,7 +224,49 @@ struct HabitCard: View {
         .padding(.vertical, 5)
     }
 }
+    
+struct PostCount {
+        var category: String
+        var count: Int
+    }
+    
+struct ChartView: View {
+    let currentStreak: Int = 25 // Exempelvärde
+    let totalDays: Int = 365 // Totalt antal dagar (ett år)
 
+    let result: Int // Beräkna återstående dagar
+    var data: [PostCount] // Array för att lagra data
+
+    init() {
+        result = totalDays - currentStreak // Beräkna result
+        data = [
+            .init(category: "Streak", count: currentStreak),
+            .init(category: "Year", count: result)
+        ] // Initialisera data-arrayen korrekt
+    }
+
+    var body: some View {
+        Chart(data, id: \.category) { item in
+            SectorMark(
+                angle: .value("Count", item.count),
+                innerRadius: .ratio(0.6),
+                angularInset: 2
+            )
+            .foregroundStyle(by: .value("Category", item.category))
+        }
+        .chartBackground { chartProxy in
+          GeometryReader { geometry in
+            if let anchor = chartProxy.plotFrame {
+              let frame = geometry[anchor]
+              Text("\(currentStreak)")
+                .position(x: frame.midX, y: frame.midY)
+            }
+          }
+        }
+        .chartLegend(Visibility.hidden)
+        .scaledToFit()
+    }
+}
 //#Preview {
 //    HabitsView(signedIn: $signedIn)
 //}
