@@ -192,28 +192,36 @@ struct HabitCard: View {
     var habit: Habit
     
     var body: some View {
-        
-        HStack(alignment: .top, spacing: 10) {
+        VStack {
+        HStack(alignment: .center, spacing: 10) {
             VStack(alignment: .leading) {
                 Image("habit")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 60, height: 60)
+                    .frame(width: 40, height: 40)
                     .cornerRadius(40)
             }
             VStack(alignment: .leading) {
                 Text(habit.name)
                     .font(.headline)
                     .foregroundColor(.primary)
+                    
+                
+            }
+            Spacer()
+            
+        }
+        Spacer()
+        HStack {
                 if !habit.description.isEmpty {
                     Text(habit.description)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .lineLimit(nil)
                 }
+                Spacer()
+                ChartView()
             }
-            Spacer()
-            ChartView()
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -231,7 +239,7 @@ struct PostCount {
     }
     
 struct ChartView: View {
-    let currentStreak: Int = 25 // Exempelvärde
+    let currentStreak: Int = 125 // Exempelvärde
     let totalDays: Int = 365 // Totalt antal dagar (ett år)
 
     let result: Int // Beräkna återstående dagar
