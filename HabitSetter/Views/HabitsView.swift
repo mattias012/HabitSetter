@@ -16,6 +16,7 @@ struct HabitsView: View {
     @EnvironmentObject var habitsVM: HabitsViewModel
     
     @StateObject var streakVM = StreakViewModel()
+    @StateObject var userVM = UserViewModel()
     
     @State var habit : Habit?
     
@@ -24,9 +25,19 @@ struct HabitsView: View {
     @State private var showDeleteConfirm = false
     @State private var indexSetToDelete: IndexSet? //keep track of the rows in the list
     
+    @State var ourGreeting: String = ""
     
+    @State var showGreeting = false
     
     var body: some View {
+        
+        VStack(alignment: .leading){
+            if showGreeting {
+                Text(ourGreeting)
+                    .font(.title)
+                    .padding([.top, .leading, .trailing])
+            }
+        }
         
         TabView {
             
@@ -39,39 +50,58 @@ struct HabitsView: View {
             //Tab 3: Profile View
             profileTab
         }
+        .onAppear {
+                   checkAndShowGreeting()
+        }
     }
     
     // Tab 1: Home View
     var homeViewTab: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    ForEach(habitsVM.listOfNotPerformedHabits) { habit in
-                        HabitCard(streakVM: streakVM, habitsVM: habitsVM, habit: habit)
-                            .frame(maxHeight: 160)
-                            .padding(.horizontal, -5)
-                            .listRowInsets(EdgeInsets())
-                            .onTapGesture {
-                                
-                                habitsVM.toggleHabitStatus(of: habit)
-                                streakVM.toastMessage = "Good job keeping the streak alive!"
-                                streakVM.showToast = true
-                            }
+        
+
+            NavigationStack {
+                VStack {
+                    List {
+                        ForEach(habitsVM.listOfNotPerformedHabits) { habit in
+                                    HabitCard(streakVM: streakVM, habitsVM: habitsVM, habit: habit)
+                                        .frame(maxHeight: 160)
+                                        .padding(.horizontal, -5)
+                                        .listRowInsets(EdgeInsets())
+                                        .onTapGesture {
+                                            
+                                            habitsVM.toggleHabitStatus(of: habit)
+                                            streakVM.toastMessage = "Good job keeping the streak alive!"
+                                            streakVM.showToast = true
+                                        }
+                                }
                     }
-                    
+                    .listStyle(PlainListStyle())
+                    .navigationTitle("Today's Habits")
+                    .font(.subheadline)
+    
                 }
-                .listStyle(PlainListStyle())
-                .navigationTitle("Habits for Today")
-            }
-            .toast(isShowing: $streakVM.showToast, message: streakVM.toastMessage)
-            
-            VStack {
-                completedHabitsSection
-            }
+                .onAppear {
+                    
+                    userVM.greetUser(id: SessionManager.shared.currentUserId){ result in
+                        switch result {
+                        case .success(let greeting):
+                            ourGreeting = greeting
+                        case .failure(let error):
+                            print("Error fetching user: \(error.localizedDescription)")
+                        }
+                        
+                    }
+                }
+                .toast(isShowing: $streakVM.showToast, message: streakVM.toastMessage)
+                
+                VStack {
+                    completedHabitsSection
+                }
         }
         .tabItem {
-            Label("Home", systemImage: "house")
+                Label("Home", systemImage: "house")
         }
+        
     }
     
     //Tab 2: List of all habits
@@ -84,6 +114,9 @@ struct HabitsView: View {
                     }
                 }
                 .onDelete(perform: showDeleteConfirmation)
+            }
+            .onAppear(){
+                showGreeting = false
             }
             .navigationTitle("All Habits") //menu/title
             .alert("Confirm Delete", isPresented: $showDeleteConfirm) { //create an alert prior to delete. We send the state of the showDeleteConfirm value to make sure it is not already dispLayed?
@@ -111,7 +144,10 @@ struct HabitsView: View {
     //Tab 3: Profile View
     var profileTab: some View {
         NavigationStack {
-            Text("Profile Info Here")
+                CalenderView()
+                .onAppear(){
+                    showGreeting = false
+                }
                 .navigationTitle("Profile")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
@@ -184,6 +220,21 @@ struct HabitsView: View {
             print(signOutError)
         }
     }
+    
+    func checkAndShowGreeting() {
+        
+        //this is actually just for any person using the app, so the greeting message will not appear if a different user is logged in..
+        //perhaps change later on?
+        
+            let lastOpened = UserDefaults.standard.object(forKey: "LastOpened") as? Date ?? Date.distantPast
+            let timeIntervalSinceLastOpened = Date().timeIntervalSince(lastOpened)
+            
+            //show greet if user has not open the app last hour (in seconds)
+            if timeIntervalSinceLastOpened > 3600 {
+                showGreeting = true
+                UserDefaults.standard.set(Date(), forKey: "LastOpened")
+            }
+        }
 }
     
 

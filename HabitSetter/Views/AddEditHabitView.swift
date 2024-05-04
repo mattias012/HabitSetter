@@ -19,6 +19,8 @@ struct AddEditHabitView: View {
     @State private var selectedInterval: HabitInterval = .daily
     @State private var imageLink: String = ""
     @State private var sendNotification: Bool = true
+    @State private var habitColor: String = ""
+    
     @State private var showErrorAlert = false
     
     let db = Firestore.firestore()
@@ -48,6 +50,7 @@ struct AddEditHabitView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     
                     TextField("Image URL", text: $imageLink)
+                    TextField("Habit color", text: $habitColor)
                     Toggle("Send Notification", isOn: $sendNotification)
                 }
                 Button("Save") {
@@ -90,6 +93,7 @@ struct AddEditHabitView: View {
             selectedInterval = habit.interval
             imageLink = habit.imageLink ?? ""
             sendNotification = habit.sendNotification
+            habitColor = habit.habitColor ?? ""
         }
     }
     
@@ -105,7 +109,8 @@ struct AddEditHabitView: View {
             userId: SessionManager.shared.currentUserId,
             sendNotification: sendNotification,
             dateCreated: habit?.dateCreated ?? Timestamp(date: Date()), // Use the existing creation date if available
-            dateEdited: Timestamp(date: Date()) // Always update the edited date
+            dateEdited: Timestamp(date: Date()), // Always update the edited date
+            habitColor: habitColor
         )
 
         //Check to see if the habit already has an ID (then it should be an update)

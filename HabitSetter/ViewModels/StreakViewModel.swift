@@ -71,8 +71,14 @@ class StreakViewModel : ObservableObject {
                 ])
             }
         }
-        
-        //otherwise we do something else?
+        else {
+            
+            //otherwise we do something else
+            //this case would be a broken streak
+            //create a new document for this habit
+            self.createStreak(for: habit, performedDate: performedDate)
+            
+        }
     }
     
     //Make sure it is a streak

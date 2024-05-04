@@ -18,26 +18,33 @@ struct HabitCard: View {
     
     var body: some View {
         VStack {
-        HStack(alignment: .center, spacing: 10) {
-            VStack(alignment: .leading) {
-                Image("habit")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 40, height: 40)
-                    .cornerRadius(40)
-            }
-            VStack(alignment: .leading) {
-                Text(habit.name)
-                    .font(.headline)
-                    .foregroundColor(.primary)
+            HStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .leading) {
+                    Image("habit")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 40, height: 40)
+                        .cornerRadius(40)
+                }
+                VStack(alignment: .leading) {
+                    Text(habit.name)
+                        .font(.headline)
+                        .foregroundColor(.primary)
                     
+                    
+                }
+                Spacer()
+                Text(habit.category.rawValue)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .padding(5)
+                    .background(ColorForCategory(category: habit.category))
+                    .foregroundColor(.white)
+                    .cornerRadius(5)
                 
             }
             Spacer()
-            
-        }
-        Spacer()
-        HStack {
+            HStack {
                 if !habit.description.isEmpty {
                     Text(habit.description)
                         .font(.subheadline)
@@ -45,7 +52,7 @@ struct HabitCard: View {
                         .lineLimit(nil)
                 }
                 Spacer()
-                ChartView(streakVM: streakVM, habit: habit)
+                ChartView(streakVM: streakVM, habit: habit).alignmentGuide(.top) { d in d[.top] }
             }
         }
         .padding()
@@ -56,4 +63,13 @@ struct HabitCard: View {
         .padding(.horizontal)
         .padding(.vertical, 5)
     }
+    
+    func ColorForCategory(category: HabitCategory) -> Color {
+            switch category {
+            case .work:
+                return Color.red
+            case .personal:
+                return Color.blue
+            }
+        }
 }
