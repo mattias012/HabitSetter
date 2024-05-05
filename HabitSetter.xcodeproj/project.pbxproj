@@ -33,6 +33,7 @@
 		CD81BBF22BE56547005A0763 /* HabitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BBF12BE56547005A0763 /* HabitCard.swift */; };
 		CD81BC022BE6C044005A0763 /* CalenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BC012BE6C044005A0763 /* CalenderView.swift */; };
 		CD81BC052BE6C0EC005A0763 /* SwiftUICalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CD81BC042BE6C0EC005A0763 /* SwiftUICalendar */; };
+		CD81BC072BE80C5E005A0763 /* StreakInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BC062BE80C5E005A0763 /* StreakInfo.swift */; };
 		CD9DD0562BE4239F0026A222 /* Streak.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0552BE4239E0026A222 /* Streak.swift */; };
 		CD9DD0582BE426E90026A222 /* StreakViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0572BE426E90026A222 /* StreakViewModel.swift */; };
 		CD9DD0622BE4EC700026A222 /* ToastViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */; };
@@ -79,6 +80,7 @@
 		CD81BBEF2BE564F8005A0763 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		CD81BBF12BE56547005A0763 /* HabitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCard.swift; sourceTree = "<group>"; };
 		CD81BC012BE6C044005A0763 /* CalenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalenderView.swift; sourceTree = "<group>"; };
+		CD81BC062BE80C5E005A0763 /* StreakInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakInfo.swift; sourceTree = "<group>"; };
 		CD9DD0552BE4239E0026A222 /* Streak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Streak.swift; sourceTree = "<group>"; };
 		CD9DD0572BE426E90026A222 /* StreakViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakViewModel.swift; sourceTree = "<group>"; };
 		CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifier.swift; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				CDBB98FB2BE1911100984E17 /* User.swift */,
 				CD4CBDEF2BE252210019CB91 /* SessionManger.swift */,
 				CD9DD0552BE4239E0026A222 /* Streak.swift */,
+				CD81BC062BE80C5E005A0763 /* StreakInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -370,6 +373,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD01A9FC2BD9088400D1E32D /* Habit.swift in Sources */,
+				CD81BC072BE80C5E005A0763 /* StreakInfo.swift in Sources */,
 				CD9DD0562BE4239F0026A222 /* Streak.swift in Sources */,
 				CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */,
 				CD81BC022BE6C044005A0763 /* CalenderView.swift in Sources */,

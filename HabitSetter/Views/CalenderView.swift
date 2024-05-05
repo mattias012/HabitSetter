@@ -7,22 +7,20 @@
 
 import SwiftUI
 import SwiftUICalendar
-import Firebase
-import FirebaseFirestoreSwift
 
 extension YearMonthDay: Comparable {
     public static func < (lhs: SwiftUICalendar.YearMonthDay, rhs: SwiftUICalendar.YearMonthDay) -> Bool {
         if lhs.year != rhs.year {
-                    return lhs.year < rhs.year
-                } else if lhs.month != rhs.month {
-                    return lhs.month < rhs.month
-                } else {
-                    return lhs.day < rhs.day
-                }
+            return lhs.year < rhs.year
+        } else if lhs.month != rhs.month {
+            return lhs.month < rhs.month
+        } else {
+            return lhs.day < rhs.day
+        }
     }
     static func == (lhs: YearMonthDay, rhs: YearMonthDay) -> Bool {
-           return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day
-       }
+        return lhs.year == rhs.year && lhs.month == rhs.month && lhs.day == rhs.day
+    }
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(self.year)
@@ -31,27 +29,20 @@ extension YearMonthDay: Comparable {
     }
 }
 
-import SwiftUI
-import Firebase
-
 struct CalenderView: View {
-    
-    private var db = Firestore.firestore()
-    
-    @State var informations = [YearMonthDay: [StreakInfo]]()
+       
+//    @State var informations = [YearMonthDay: [StreakInfo]]()
+    @ObservedObject var streakVM = StreakViewModel()
     @ObservedObject var controller: CalendarController = CalendarController()
 
-
-        
     var body: some View {
-        
         
         GeometryReader { reader in
             VStack {
                 Text("\(controller.yearMonth.monthShortString), \(String(controller.yearMonth.year))")
                     .font(.title)
                     .padding(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-
+                
                 CalendarView(controller, startWithMonday: true, headerSize: .fixHeight(50.0)) { week in
                     Text("\(week.shortString)")
                         .font(.headline)
@@ -73,7 +64,7 @@ struct CalenderView: View {
                                     .foregroundColor(getColor(date))
                                     .padding(4)
                             }
-                            if let infos = informations[date] {
+                            if let infos = streakVM.informations[date] {
                                 ForEach(infos) { info in
                                     Text(" ")
                                         .lineLimit(1)
@@ -86,22 +77,16 @@ struct CalenderView: View {
                                         .opacity(date.isFocusYearMonth == true ? 1 : 0.4)
                                 }
                             }
-
-
                         }
                         .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
                     }
                 }
             }
         }
-
         .onAppear {
-                    loadStreaks { loadedInformations in
-                        informations = loadedInformations
-                    }
+            streakVM.loadStreaks()
+            }
         }
-
-        
     }
     
     private func getColor(_ date: YearMonthDay) -> Color {
@@ -113,56 +98,9 @@ struct CalenderView: View {
             return Color.black
         }
     }
-
-
-
-    func loadStreaks(completion: @escaping ([YearMonthDay: [StreakInfo]]) -> Void) {
-        guard let userId = SessionManager.shared.currentUserId else { return }
-
-        db.collection("streaks").whereField("userId", isEqualTo: userId)
-            .getDocuments { (querySnapshot, error) in  // Ensure closure parameters are correctly named
-                var newInformations = [YearMonthDay: [StreakInfo]]()
-
-                if let error = error {  // Correctly check and handle errors
-                    print("Error getting documents: \(error)")
-                    completion(newInformations)
-                } else {
-                    for document in querySnapshot!.documents {
-                        do {
-                            let streak = try document.data(as: Streak.self)
-                            
-                            guard let color = streak.habitColor else { continue }
-                            let streakColor = Color(hex: color)
-                            let habitName = streak.habitId ?? "Unknown Habit"
-                            
-                            let startDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.firstDayOfStreak)
-                            let endDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.lastDayPerformed)
-                            
-                            var date = YearMonthDay(year: startDateComponents.year!, month: startDateComponents.month!, day: startDateComponents.day!)
-                            let end = YearMonthDay(year: endDateComponents.year!, month: endDateComponents.month!, day: endDateComponents.day!)
-
-                            while date <= end {
-                                let habitInfo = StreakInfo(habitName: habitName, color: streakColor)
-                                newInformations[date, default: []].append(habitInfo)
-                                date = date.addDay(value: 1)
-                            }
-                        } catch {
-                            print("Error decoding streak: \(error)")
-                        }
-                    }
-                    completion(newInformations)
-                }
-            }
-    }
-
-
-
-
-
-
-}
+    
+//To get help with hex colors
 extension Color {
-
     
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -181,10 +119,4 @@ extension Color {
         }
         self.init(.sRGB, red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: Double(a) / 255)
     }
-}
-
-struct StreakInfo: Identifiable {
-    let id = UUID()
-    let habitName: String
-    let color: Color
 }

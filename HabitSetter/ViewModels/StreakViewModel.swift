@@ -5,15 +5,19 @@
 //  Created by Mattias Axelsson on 2024-05-02.
 //
 
+import SwiftUI
 import Foundation
 import Firebase
 import FirebaseFirestoreSwift
+import SwiftUICalendar
 
 class StreakViewModel : ObservableObject {
     
     @Published var showToast: Bool = false
     @Published var toastMessage: String?
-        
+    
+    @Published var informations = [YearMonthDay: [StreakInfo]]()
+    
     private var db = Firestore.firestore()
     
     func addOrUpdateStreak(habit: Habit, performedDate: Date, isUndo: Bool = false) {
@@ -155,33 +159,81 @@ class StreakViewModel : ObservableObject {
     
     // Function to fetch the current streak for a habit
     // Fetch the current streak for a specific habit and return it via completion handler
-        func getCurrentStreak(habit: Habit, completion: @escaping (Result<Int, Error>) -> Void) {
-            guard let habitId = habit.id, let userId = habit.userId else {
-                let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid habit or user ID"])
-                completion(.failure(error))
-                return
+    func getCurrentStreak(habit: Habit, completion: @escaping (Result<Int, Error>) -> Void) {
+        guard let habitId = habit.id, let userId = habit.userId else {
+            let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid habit or user ID"])
+            completion(.failure(error))
+            return
+        }
+        
+        let streaksCollection = db.collection("streaks")
+        
+        streaksCollection
+            .whereField("userId", isEqualTo: userId)
+            .whereField("habitId", isEqualTo: habitId)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    completion(.failure(error))
+                    return
+                }
+                
+                if let document = snapshot?.documents.first,
+                   let streakCount = document.data()["currentStreakCount"] as? Int {
+                    completion(.success(streakCount))
+                } else {
+                    let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Streak data not found"])
+                    completion(.failure(error))
+                }
             }
-
-            let streaksCollection = db.collection("streaks")
-            
-            streaksCollection
-                .whereField("userId", isEqualTo: userId)
-                .whereField("habitId", isEqualTo: habitId)
-                .getDocuments { snapshot, error in
-                    if let error = error {
-                        completion(.failure(error))
-                        return
+    }
+    
+    func loadStreaks() {
+        guard let userId = SessionManager.shared.currentUserId else { return }
+        
+        db.collection("streaks").whereField("userId", isEqualTo: userId)
+            .getDocuments { (querySnapshot, error) in
+                var newInformations = [YearMonthDay: [StreakInfo]]()
+                
+                if let error = error {
+//                    let errorMessage = "\(error)"
+                } else {
+                    for document in querySnapshot!.documents {
+                        do {
+                            let streak = try document.data(as: Streak.self)
+                            
+                            //Skip streak if it is just 0 (this will happen if user undo an habit and a streak has been created
+                            //the right word for contnuing is continue and no return since this is inside the do-while.
+                            if streak.currentStreakCount < 1 {
+                                continue
+                            }
+                            
+                            guard let color = streak.habitColor else { continue }
+                            let streakColor = Color(hex: color)
+                            let habitName = streak.habitId ?? "Unknown Habit"
+                            
+                            let startDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.firstDayOfStreak)
+                            let endDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.lastDayPerformed)
+                            
+                            var date = YearMonthDay(year: startDateComponents.year!, month: startDateComponents.month!, day: startDateComponents.day!)
+                            let end = YearMonthDay(year: endDateComponents.year!, month: endDateComponents.month!, day: endDateComponents.day!)
+                            
+                            while date <= end {
+                                let habitInfo = StreakInfo(habitName: habitName, color: streakColor)
+                                newInformations[date, default: []].append(habitInfo)
+                                date = date.addDay(value: 1)
+                            }
+                        } catch {
+                            print("Error decoding streak: \(error)")
+                        }
                     }
-
-                    if let document = snapshot?.documents.first,
-                       let streakCount = document.data()["currentStreakCount"] as? Int {
-                        completion(.success(streakCount))
-                    } else {
-                        let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Streak data not found"])
-                        completion(.failure(error))
+                    DispatchQueue.main.async {
+                        self.informations = newInformations
                     }
                 }
-        }
+            }
+    }
+    
+    
 }
 
 
