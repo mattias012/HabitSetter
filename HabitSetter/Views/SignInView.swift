@@ -94,7 +94,7 @@ struct SignInView : View {
         auth.signIn(withEmail: email, password: password) { result, error in
             isLoading = false  //hide progress view
             if let error = error {
-                
+                print(error)
             } else {
                 signedIn = true
                 SessionManager.shared.currentUserId = auth.currentUser?.uid

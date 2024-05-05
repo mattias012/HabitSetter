@@ -14,6 +14,7 @@ struct Streak: Codable, Identifiable {
     @DocumentID var id: String?
     var userId: String
     var habitId: String?
+    var habitColor: String?
     var firstDayOfStreak: Date
     var lastDayPerformed: Date
     var currentStreakCount: Int

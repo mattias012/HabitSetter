@@ -17,48 +17,55 @@ struct SignUpView: View {
             VStack(spacing: 20) {
                 Text("Create account")
                     .font(.largeTitle)
-
+                
+                TextField("Name", text: $userViewModel.name) //bind in ViewModel
+                    .autocapitalization(.none)
+                    .keyboardType(.default)
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(5)
+                
                 TextField("E-mail", text: $userViewModel.email) //bind in ViewModel
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
                     .padding()
                     .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .cornerRadius(5)
 
                 SecureField("Password", text: $userViewModel.password) //bind in ViewModel
                     .padding()
                     .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .cornerRadius(5)
 
-                SecureField("Confirm password", text: $userViewModel.confirmPassword) //bind in iewModel
+                SecureField("Confirm password", text: $userViewModel.confirmPassword) //bind in viewModel
                     .padding()
                     .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .cornerRadius(5)
                 
                 TextField("Your Favourite Quote", text: $userViewModel.favouriteQoute) //bind in ViewModel
                     .autocapitalization(.none)
                     .padding()
                     .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+                    .cornerRadius(5)
 
                 Button("Sign up") {
                     userViewModel.registerUser { success in
                         if success {
-                            // Stäng SignUpView
+                            //Close SignUpView
                             DispatchQueue.main.async {
                                 presentationMode.wrappedValue.dismiss()
                                 showingSignUp = false
 //                                signedIn = true
                             }
                             
-                            // Eftersom användaren redan är inloggad efter en framgångsrik registrering
-                            // Vi uppdaterar bara `signedIn` och `isLoading`
+                            //Signed IN
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                // Lägg till en liten fördröjning om du vill visa progressbaren i några ögonblick
+                               //Slow delay to be able to show progressview snabbt
                                 isLoading = true
+                                
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                    isLoading = false
-                                    signedIn = true  // Denna bör uppdatera huvudvyn att visa ContentView
+                                    isLoading = false //hide it again
+                                    signedIn = true  //loggedIn View
                                 }
                             }
                         } else {

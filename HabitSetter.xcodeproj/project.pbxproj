@@ -29,8 +29,14 @@
 		CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */; };
 		CD01AA032BDA72BE00D1E32D /* AddEditHabitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */; };
 		CD4CBDF02BE252210019CB91 /* SessionManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4CBDEF2BE252210019CB91 /* SessionManger.swift */; };
+		CD81BBF02BE564F8005A0763 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BBEF2BE564F8005A0763 /* ChartView.swift */; };
+		CD81BBF22BE56547005A0763 /* HabitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BBF12BE56547005A0763 /* HabitCard.swift */; };
+		CD81BC022BE6C044005A0763 /* CalenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BC012BE6C044005A0763 /* CalenderView.swift */; };
+		CD81BC052BE6C0EC005A0763 /* SwiftUICalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CD81BC042BE6C0EC005A0763 /* SwiftUICalendar */; };
+		CD81BC072BE80C5E005A0763 /* StreakInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BC062BE80C5E005A0763 /* StreakInfo.swift */; };
 		CD9DD0562BE4239F0026A222 /* Streak.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0552BE4239E0026A222 /* Streak.swift */; };
 		CD9DD0582BE426E90026A222 /* StreakViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0572BE426E90026A222 /* StreakViewModel.swift */; };
+		CD9DD0622BE4EC700026A222 /* ToastViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */; };
 		CDBB98FC2BE1911200984E17 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBB98FB2BE1911100984E17 /* User.swift */; };
 		CDBB98FE2BE1958B00984E17 /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBB98FD2BE1958B00984E17 /* UserViewModel.swift */; };
 /* End PBXBuildFile section */
@@ -71,8 +77,13 @@
 		CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitsViewModel.swift; sourceTree = "<group>"; };
 		CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditHabitView.swift; sourceTree = "<group>"; };
 		CD4CBDEF2BE252210019CB91 /* SessionManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManger.swift; sourceTree = "<group>"; };
+		CD81BBEF2BE564F8005A0763 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		CD81BBF12BE56547005A0763 /* HabitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCard.swift; sourceTree = "<group>"; };
+		CD81BC012BE6C044005A0763 /* CalenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalenderView.swift; sourceTree = "<group>"; };
+		CD81BC062BE80C5E005A0763 /* StreakInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakInfo.swift; sourceTree = "<group>"; };
 		CD9DD0552BE4239E0026A222 /* Streak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Streak.swift; sourceTree = "<group>"; };
 		CD9DD0572BE426E90026A222 /* StreakViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakViewModel.swift; sourceTree = "<group>"; };
+		CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifier.swift; sourceTree = "<group>"; };
 		CDBB98FB2BE1911100984E17 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		CDBB98FD2BE1958B00984E17 /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +97,7 @@
 				CD01A9EA2BD6678800D1E32D /* FirebaseFirestoreSwift in Frameworks */,
 				CD01A9E42BD6678800D1E32D /* FirebaseAnalyticsSwift in Frameworks */,
 				CD01A9E82BD6678800D1E32D /* FirebaseFirestore in Frameworks */,
+				CD81BC052BE6C0EC005A0763 /* SwiftUICalendar in Frameworks */,
 				CD01A9EE2BD6678800D1E32D /* FirebaseStorage in Frameworks */,
 				CD01A9E62BD6678800D1E32D /* FirebaseAuth in Frameworks */,
 				CD01A9E22BD6678800D1E32D /* FirebaseAnalytics in Frameworks */,
@@ -116,6 +128,7 @@
 				CD01A9C42BD5B73800D1E32D /* HabitSetterTests */,
 				CD01A9CE2BD5B73800D1E32D /* HabitSetterUITests */,
 				CD01A9B22BD5B73600D1E32D /* Products */,
+				CD9DD05C2BE4E9180026A222 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -176,6 +189,10 @@
 				CD01A9B62BD5B73600D1E32D /* ContentView.swift */,
 				CD01A9F82BD9075F00D1E32D /* HabitsView.swift */,
 				CD01AA022BDA72BE00D1E32D /* AddEditHabitView.swift */,
+				CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */,
+				CD81BBEF2BE564F8005A0763 /* ChartView.swift */,
+				CD81BBF12BE56547005A0763 /* HabitCard.swift */,
+				CD81BC012BE6C044005A0763 /* CalenderView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -187,6 +204,7 @@
 				CDBB98FB2BE1911100984E17 /* User.swift */,
 				CD4CBDEF2BE252210019CB91 /* SessionManger.swift */,
 				CD9DD0552BE4239E0026A222 /* Streak.swift */,
+				CD81BC062BE80C5E005A0763 /* StreakInfo.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -199,6 +217,13 @@
 				CD9DD0572BE426E90026A222 /* StreakViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		CD9DD05C2BE4E9180026A222 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -225,6 +250,7 @@
 				CD01A9E92BD6678800D1E32D /* FirebaseFirestoreSwift */,
 				CD01A9EB2BD6678800D1E32D /* FirebaseMessaging */,
 				CD01A9ED2BD6678800D1E32D /* FirebaseStorage */,
+				CD81BC042BE6C0EC005A0763 /* SwiftUICalendar */,
 			);
 			productName = HabitSetter;
 			productReference = CD01A9B12BD5B73600D1E32D /* HabitSetter.app */;
@@ -300,6 +326,8 @@
 			mainGroup = CD01A9A82BD5B73600D1E32D;
 			packageReferences = (
 				CD01A9E02BD6678800D1E32D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				CD9DD0592BE4E4060026A222 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
+				CD81BC032BE6C0C3005A0763 /* XCRemoteSwiftPackageReference "SwiftUICalendar" */,
 			);
 			productRefGroup = CD01A9B22BD5B73600D1E32D /* Products */;
 			projectDirPath = "";
@@ -345,15 +373,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD01A9FC2BD9088400D1E32D /* Habit.swift in Sources */,
+				CD81BC072BE80C5E005A0763 /* StreakInfo.swift in Sources */,
 				CD9DD0562BE4239F0026A222 /* Streak.swift in Sources */,
 				CD01A9F72BD705F300D1E32D /* SignUpView.swift in Sources */,
+				CD81BC022BE6C044005A0763 /* CalenderView.swift in Sources */,
 				CD01A9F42BD7056500D1E32D /* SignInView.swift in Sources */,
 				CD9DD0582BE426E90026A222 /* StreakViewModel.swift in Sources */,
+				CD9DD0622BE4EC700026A222 /* ToastViewModifier.swift in Sources */,
 				CDBB98FE2BE1958B00984E17 /* UserViewModel.swift in Sources */,
 				CD4CBDF02BE252210019CB91 /* SessionManger.swift in Sources */,
+				CD81BBF02BE564F8005A0763 /* ChartView.swift in Sources */,
 				CD01AA032BDA72BE00D1E32D /* AddEditHabitView.swift in Sources */,
 				CD01A9B72BD5B73600D1E32D /* ContentView.swift in Sources */,
 				CDBB98FC2BE1911200984E17 /* User.swift in Sources */,
+				CD81BBF22BE56547005A0763 /* HabitCard.swift in Sources */,
 				CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */,
 				CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */,
 				CD01A9B52BD5B73600D1E32D /* HabitSetterApp.swift in Sources */,
@@ -700,6 +733,22 @@
 				minimumVersion = 10.24.0;
 			};
 		};
+		CD81BC032BE6C0C3005A0763 /* XCRemoteSwiftPackageReference "SwiftUICalendar" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GGJJack/SwiftUICalendar";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.14;
+			};
+		};
+		CD9DD0592BE4E4060026A222 /* XCRemoteSwiftPackageReference "Toast-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scalessec/Toast-Swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -737,6 +786,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CD01A9E02BD6678800D1E32D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		CD81BC042BE6C0EC005A0763 /* SwiftUICalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CD81BC032BE6C0C3005A0763 /* XCRemoteSwiftPackageReference "SwiftUICalendar" */;
+			productName = SwiftUICalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

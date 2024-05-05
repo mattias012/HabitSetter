@@ -1,5 +1,5 @@
 {
-  "originHash" : "c63c63846d9c539229e96de38d6af51417e28c0ee9a0bc48bd0f0f19d923c329",
+  "originHash" : "5e5d47d3006b769c70658bca5b789a2253207289b0e5818ba59ae7e07604c2d3",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -116,6 +116,24 @@
       "state" : {
         "revision" : "9f0c76544701845ad98716f3f6a774a892152bcb",
         "version" : "1.26.0"
+      }
+    },
+    {
+      "identity" : "swiftuicalendar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/GGJJack/SwiftUICalendar",
+      "state" : {
+        "revision" : "7ecd220909bc25529e35e2addb513a20abbfec82",
+        "version" : "0.1.14"
+      }
+    },
+    {
+      "identity" : "toast-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scalessec/Toast-Swift.git",
+      "state" : {
+        "revision" : "ddccd20d6fb718448d9b179c454c561653fda7d5",
+        "version" : "5.1.1"
       }
     }
   ],

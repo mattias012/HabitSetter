@@ -40,6 +40,7 @@ struct Habit: Codable, Identifiable {
     var userId: String?
     var performed: Date?
     var sendNotification: Bool = true
+    var habitColor: String? = ""
 
     var dateCreated: Timestamp = Timestamp(date: Date())  //standard value current time
     var dateEdited: Timestamp = Timestamp(date: Date())    //standard value current time
@@ -58,7 +59,8 @@ struct Habit: Codable, Identifiable {
          performed: Date? = nil,
          sendNotification: Bool,
          dateCreated: Timestamp,
-         dateEdited: Timestamp) {
+         dateEdited: Timestamp,
+         habitColor: String? = nil) {
         
         //Set to current user
         self.userId = SessionManager.shared.currentUserId ?? userId 
@@ -75,6 +77,7 @@ struct Habit: Codable, Identifiable {
         self.sendNotification = sendNotification
         self.dateCreated = dateCreated
         self.dateEdited = dateEdited
+        self.habitColor = habitColor
 
         //Initially we set nextDue to today's date, ignoring interval since it will be nicer to see all the habits you have added.. i'm I right?
         self.nextDue = Calendar.current.startOfDay(for: Date())
@@ -98,6 +101,7 @@ struct Habit: Codable, Identifiable {
         sendNotification = try container.decode(Bool.self, forKey: .sendNotification)
         dateCreated = try container.decode(Timestamp.self, forKey: .dateCreated)
         dateEdited = try container.decode(Timestamp.self, forKey: .dateEdited)
+        habitColor = try container.decodeIfPresent(String.self, forKey: .habitColor)
     }
 }
 
