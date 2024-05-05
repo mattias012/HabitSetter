@@ -35,14 +35,17 @@ import SwiftUI
 import Firebase
 
 struct CalenderView: View {
+    
     private var db = Firestore.firestore()
-        @State var informations = [YearMonthDay: [(String, Color)]]()
-        @State var habits = [String: Habit]()  // Dictionary för att spara habits med id som key.
-        @ObservedObject var controller: CalendarController = CalendarController()
+    
+    @State var informations = [YearMonthDay: [StreakInfo]]()
+    @ObservedObject var controller: CalendarController = CalendarController()
 
 
         
     var body: some View {
+        
+        
         GeometryReader { reader in
             VStack {
                 Text("\(controller.yearMonth.monthShortString), \(String(controller.yearMonth.year))")
@@ -71,27 +74,31 @@ struct CalenderView: View {
                                     .padding(4)
                             }
                             if let infos = informations[date] {
-                                ForEach(infos.indices, id: \.self) { index in
-                                    let info = infos[index]
-                                    Text(info.0)
+                                ForEach(infos) { info in
+                                    Text(" ")
                                         .lineLimit(1)
                                         .foregroundColor(.white)
                                         .font(.system(size: 8, weight: .bold, design: .default))
                                         .padding(EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4))
                                         .frame(width: geometry.size.width, alignment: .center)
-                                        .background(info.1.opacity(0.75))
+                                        .background(info.color.opacity(0.75))
                                         .cornerRadius(4)
                                         .opacity(date.isFocusYearMonth == true ? 1 : 0.4)
                                 }
                             }
+
+
                         }
                         .frame(width: geometry.size.width, height: geometry.size.height, alignment: .topLeading)
                     }
                 }
             }
         }
+
         .onAppear {
-            loadAllData()
+                    loadStreaks { loadedInformations in
+                        informations = loadedInformations
+                    }
         }
 
         
@@ -106,81 +113,41 @@ struct CalenderView: View {
             return Color.black
         }
     }
-    
-    func loadAllData() {
-        loadHabits { habits in
-            self.loadStreaks(with: habits) { updatedInformations in
-                self.informations = updatedInformations
-            }
-        }
-    }
 
-    private func loadHabits(completion: @escaping ([String: Habit]) -> Void) {
-            var habitsDict = [String: Habit]()
-            
-            db.collection("habits").getDocuments {
-                (querySnapshot, err) in
-                guard let documents = querySnapshot?.documents else {
-                    print("No documents in 'habits'")
-                    completion([:])
-                    return
-                }
-                for document in documents {
-                    do {
-                        let habit = try document.data(as: Habit.self)
-                        if let id = habit.id {
-                            habitsDict[id] = habit
-                        }
-                    } catch let error {
-                        print("Error decoding habit: \(error)")
-                    }
-                }
-                completion(habitsDict)
-            }
-        }
 
-    func loadStreaks(with habits: [String: Habit], completion: @escaping ([YearMonthDay: [(String, Color)]]) -> Void) {
+
+    func loadStreaks(completion: @escaping ([YearMonthDay: [StreakInfo]]) -> Void) {
         guard let userId = SessionManager.shared.currentUserId else { return }
-        
-        db.collection("streaks").whereField("userId", isEqualTo: userId)
-            .getDocuments { querySnapshot, err in
-                var newInformations = [YearMonthDay: [(String, Color)]]()
-                if let err = err {
-                    print("Error getting documents: \(err)")
-                    completion([:])
-                } else if let querySnapshot = querySnapshot {
-                    for document in querySnapshot.documents {
-                        do {
-                            let data = document.data()
-                            let habitId = data["habitId"] as? String ?? ""
-                            let habitColor = habits[habitId]?.habitColor ?? "#FFFFFF" // Default to white if no color found.
 
-                            guard let firstDayOfStreak = data["firstDayOfStreak"] as? Timestamp,
-                                  let lastDayPerformed = data["lastDayPerformed"] as? Timestamp,
-                                  let currentStreakCount = data["currentStreakCount"] as? Int else {
-                                    throw NSError(domain: "", code: 100, userInfo: [NSLocalizedDescriptionKey: "Missing data in document"])
-                            }
+        db.collection("streaks").whereField("userId", isEqualTo: userId)
+            .getDocuments { (querySnapshot, error) in  // Ensure closure parameters are correctly named
+                var newInformations = [YearMonthDay: [StreakInfo]]()
+
+                if let error = error {  // Correctly check and handle errors
+                    print("Error getting documents: \(error)")
+                    completion(newInformations)
+                } else {
+                    for document in querySnapshot!.documents {
+                        do {
+                            let streak = try document.data(as: Streak.self)
                             
-                            let startDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: firstDayOfStreak.dateValue())
-                            let endDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: lastDayPerformed.dateValue())
+                            guard let color = streak.habitColor else { continue }
+                            let streakColor = Color(hex: color)
+                            let habitName = streak.habitId ?? "Unknown Habit"
+                            
+                            let startDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.firstDayOfStreak)
+                            let endDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.lastDayPerformed)
                             
                             var date = YearMonthDay(year: startDateComponents.year!, month: startDateComponents.month!, day: startDateComponents.day!)
                             let end = YearMonthDay(year: endDateComponents.year!, month: endDateComponents.month!, day: endDateComponents.day!)
-                            
+
                             while date <= end {
-                                if newInformations[date] == nil {
-                                    newInformations[date] = []
-                                }
-                                if newInformations[date]!.count < 4 {
-                                    DispatchQueue.main.async {
-                                        
-                                        newInformations[date]?.append(("\(currentStreakCount) days", Color(hex: habitColor)))
-                                    }
-                                }
+                                let habitInfo = StreakInfo(habitName: habitName, color: streakColor)
+                                newInformations[date, default: []].append(habitInfo)
                                 date = date.addDay(value: 1)
                             }
-                        } catch let error {
-                            print("Error processing document: \(error.localizedDescription)")
+                        } catch {
+                            print("Error decoding streak: \(error)")
                         }
                     }
                     completion(newInformations)
@@ -188,8 +155,15 @@ struct CalenderView: View {
             }
     }
 
+
+
+
+
+
 }
 extension Color {
+
+    
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
@@ -207,4 +181,10 @@ extension Color {
         }
         self.init(.sRGB, red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: Double(a) / 255)
     }
+}
+
+struct StreakInfo: Identifiable {
+    let id = UUID()
+    let habitName: String
+    let color: Color
 }

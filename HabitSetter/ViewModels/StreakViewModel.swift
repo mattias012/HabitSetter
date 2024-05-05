@@ -110,10 +110,12 @@ class StreakViewModel : ObservableObject {
         
         let newStreakRef = streaksCollection.document()
         
+        guard let userId = habit.userId, let habitId = habit.id, let habitColor = habit.habitColor else { return }
         //Create Streak
         let newStreak = Streak(
-            userId: habit.userId!,
-            habitId: habit.id!,
+            userId: userId,
+            habitId: habitId,
+            habitColor: habitColor,
             firstDayOfStreak: performedDate,
             lastDayPerformed: performedDate,
             currentStreakCount: 1,
