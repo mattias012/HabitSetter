@@ -158,7 +158,7 @@ struct HabitsView: View {
                 }
         }
         .tabItem {
-            Label("Profile", systemImage: "person.crop.circle")
+            Label("Profile & Streak", systemImage: "person.crop.circle")
         }
     }
     
