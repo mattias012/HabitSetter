@@ -16,7 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
       //Request permission for push notifcations
       UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                   if granted {
-                      print("Användaren gav tillstånd för notiser.")
+                      
                   } else if let error = error {
                       print("Fel vid begäran av notifikationstillstånd: \(error.localizedDescription)")
                   }

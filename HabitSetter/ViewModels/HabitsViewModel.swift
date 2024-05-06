@@ -138,6 +138,29 @@ class HabitsViewModel : ObservableObject {
             }
         }
     }
+    func updateStreaks(for habitId: String?, withNewColor hexColor: String) {
+        
+        //guard id as usual
+        guard let habitId = habitId else { return }
+        
+        db.collection("streaks").whereField("habitId", isEqualTo: habitId).getDocuments { (querySnapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+            } else {
+                
+                //after we got the streaks documents, update the color for these with the new color
+                for document in querySnapshot!.documents {
+                    self.db.collection("streaks").document(document.documentID).updateData([
+                        "habitColor": hexColor //Update color
+                    ]) { err in
+                        if let err = err {
+                            print("Error updating document: \(err)")
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     //Get all habits not completed for day
     //Make sure to only pick the ones with nextDue on todays date.

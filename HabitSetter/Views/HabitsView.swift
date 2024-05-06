@@ -31,12 +31,17 @@ struct HabitsView: View {
     @State var showGreeting = false
     
     var body: some View {
-        
-        VStack(alignment: .leading){
-            if showGreeting {
-                Text(ourGreeting)
-                    .font(.title)
-                    .padding([.top, .leading, .trailing])
+        if showGreeting {
+            VStack(alignment: .leading, spacing: 10){
+                VStack{
+                    Divider()
+                    Text(ourGreeting)
+                        .font(.subheadline)
+                        .bold()
+                        .padding()
+                    Divider()
+                }
+                .background(Color.green.opacity(0.2))
             }
         }
         
@@ -147,11 +152,22 @@ struct HabitsView: View {
     //Tab 3: Profile View
     var profileTab: some View {
         NavigationStack {
+            VStack(spacing: 10) {
+                        Divider()
+                        Text("Progress Through Consistency")
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                            .padding()
+                        Divider()
+                }
+            
+      
                 CalenderView()
                 .onAppear(){
                     showGreeting = false
                 }
-                .navigationTitle("Profile")
+        
+                .navigationTitle("Profile & Streak")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: logOut) {
@@ -233,7 +249,8 @@ struct HabitsView: View {
             let timeIntervalSinceLastOpened = Date().timeIntervalSince(lastOpened)
             
             //show greet if user has not open the app last hour (in seconds)
-            if timeIntervalSinceLastOpened > 3600 {
+            //3600 for one hour
+            if timeIntervalSinceLastOpened > 1 {
                 showGreeting = true
                 UserDefaults.standard.set(Date(), forKey: "LastOpened")
             }

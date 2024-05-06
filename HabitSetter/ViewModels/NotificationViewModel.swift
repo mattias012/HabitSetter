@@ -43,7 +43,6 @@ class NotificationViewModel: ObservableObject {
         guard let userId = SessionManager.shared.currentUserId else { return }
         
         let startOfDay = calendar.startOfDay(for: Date())
-        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return }
         
         //remove any duplicates
         habitsListenerRegistration?.remove()
@@ -55,7 +54,7 @@ class NotificationViewModel: ObservableObject {
             .whereField("sendNotification", isEqualTo: true)
             .addSnapshotListener { snapshot, error in
                 
-                if let error = error {
+                if error != nil {
                 }
                 
                 do {

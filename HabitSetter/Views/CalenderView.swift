@@ -31,7 +31,6 @@ extension YearMonthDay: Comparable {
 
 struct CalenderView: View {
        
-//    @State var informations = [YearMonthDay: [StreakInfo]]()
     @ObservedObject var streakVM = StreakViewModel()
     @ObservedObject var controller: CalendarController = CalendarController()
 
@@ -66,7 +65,7 @@ struct CalenderView: View {
                             }
                             if let infos = streakVM.informations[date] {
                                 ForEach(infos) { info in
-                                    Text(" ")
+                                    Text("\(info.habitName)")
                                         .lineLimit(1)
                                         .foregroundColor(.white)
                                         .font(.system(size: 8, weight: .bold, design: .default))
@@ -84,7 +83,8 @@ struct CalenderView: View {
             }
         }
         .onAppear {
-            streakVM.loadStreaks()
+            streakVM.habitsDictionary.removeAll()
+            streakVM.loadStreaksAndHabits()
             }
         }
     }
@@ -118,5 +118,35 @@ extension Color {
             (a, r, g, b) = (255, 0, 0, 0)
         }
         self.init(.sRGB, red: Double(r) / 255, green: Double(g) / 255, blue: Double(b) / 255, opacity: Double(a) / 255)
+    }
+    
+    func toHex(alpha: Bool = false) -> String? {
+            guard let components = cgColor?.components, components.count >= 3 else {
+                return nil
+            }
+            let r = Float(components[0])
+            let g = Float(components[1])
+            let b = Float(components[2])
+            let a = Float(components.count >= 4 ? components[3] : 1)
+            if alpha {
+                return String(format: "#%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255), lroundf(a * 255))
+            } else {
+                return String(format: "#%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
+            }
+        }
+   
+    static func fromHex(_ hex: String) -> Color {
+            var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
+            hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
+
+            var rgb: UInt64 = 0
+
+            Scanner(string: hexSanitized).scanHexInt64(&rgb)
+
+            let r = Double((rgb & 0xFF0000) >> 16) / 255.0
+            let g = Double((rgb & 0x00FF00) >> 8) / 255.0
+            let b = Double(rgb & 0x0000FF) / 255.0
+
+            return Color(red: r, green: g, blue: b)
     }
 }

@@ -19,7 +19,10 @@ struct AddEditHabitView: View {
     @State private var selectedInterval: HabitInterval = .daily
     @State private var imageLink: String = ""
     @State private var sendNotification: Bool = true
-    @State private var habitColor: String = ""
+//    @State private var habitColorString: String = ""
+    
+    @State private var habitColor: Color = .blue
+
     
     @State private var showErrorAlert = false
     
@@ -50,7 +53,9 @@ struct AddEditHabitView: View {
                     .pickerStyle(SegmentedPickerStyle())
                     
                     TextField("Image URL", text: $imageLink)
-                    TextField("Habit color", text: $habitColor)
+//                    TextField("Habit color", text: $habitColor)
+                    ColorPicker("Habit color", selection: $habitColor, supportsOpacity: false)
+
                     Toggle("Send Notification", isOn: $sendNotification)
                 }
                 Button("Save") {
@@ -93,14 +98,17 @@ struct AddEditHabitView: View {
             selectedInterval = habit.interval
             imageLink = habit.imageLink ?? ""
             sendNotification = habit.sendNotification
-            habitColor = habit.habitColor ?? ""
+            habitColor = Color.fromHex(habit.habitColor ?? "#0000FF")
         }
     }
     
     private func saveOrUpdateHabit() {
-        // Assuming updatedHabit is created here with possibly new or updated values
+        //Assuming updatedHabit is created here with possibly new or updated values
+        
+        let hexColor = habitColor.toHex() ?? "#0000FF"
+        
         let updatedHabit = Habit(
-            id: habit?.id, // Use the existing ID, if any
+            id: habit?.id,
             name: name,
             description: description,
             category: selectedCategory,
@@ -109,20 +117,21 @@ struct AddEditHabitView: View {
             userId: SessionManager.shared.currentUserId,
             sendNotification: sendNotification,
             dateCreated: habit?.dateCreated ?? Timestamp(date: Date()), // Use the existing creation date if available
-            dateEdited: Timestamp(date: Date()), // Always update the edited date
-            habitColor: habitColor
+            dateEdited: Timestamp(date: Date()),
+            habitColor: hexColor
         )
 
         //Check to see if the habit already has an ID (then it should be an update)
         if updatedHabit.id != nil {
             // Update an existing habit
             habitsVM.update(habit: updatedHabit)
+            
+            habitsVM.updateStreaks(for: updatedHabit.id, withNewColor: hexColor)
         } else {
             //otherwise letes create a new habit
             habitsVM.add(habit: updatedHabit)
         }
     }
-
 }
 
 
