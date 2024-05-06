@@ -11,6 +11,9 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestoreSwift
 
+
+//Not thought through this model all the way. At this stage only a daily reminder.. Perhaps change Habits model to include time to remind or something..
+//but then the user can receive many alerts in worst case. Very annoying?
 class NotificationViewModel: ObservableObject {
     
     let calendar = Calendar.current
@@ -60,6 +63,7 @@ class NotificationViewModel: ObservableObject {
                         return try document.data(as: Habit.self)
                     } ?? []
                     
+                    //If list is not empy, we schedule the notifications
                     if !listOfNotPerformedHabits.isEmpty {
                         self.scheduleNotification()
                     }
@@ -75,6 +79,7 @@ class NotificationViewModel: ObservableObject {
         content.body = "You have habits to complete today."
         content.sound = .default
         
+        //Set time when to notify user
         var dateComponents = DateComponents()
         dateComponents.hour = 15
         dateComponents.minute = 32
