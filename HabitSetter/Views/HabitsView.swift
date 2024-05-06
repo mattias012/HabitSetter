@@ -54,7 +54,7 @@ struct HabitsView: View {
         .onAppear {
                    checkAndShowGreeting()
                 //Start scheduling notifications
-                notificationVM.scheduleNotification()
+//                notificationVM.scheduleNotification()
         }
     }
     

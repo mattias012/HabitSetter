@@ -40,6 +40,7 @@ class NotificationViewModel: ObservableObject {
         guard let userId = SessionManager.shared.currentUserId else { return }
         
         let startOfDay = calendar.startOfDay(for: Date())
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return }
         
         //remove any duplicates
         habitsListenerRegistration?.remove()
@@ -48,10 +49,10 @@ class NotificationViewModel: ObservableObject {
         habitsListenerRegistration = db.collection("habits")
             .whereField("userId", isEqualTo: userId)
             .whereField("nextDue", isLessThanOrEqualTo: startOfDay)
+            .whereField("sendNotification", isEqualTo: true)
             .addSnapshotListener { snapshot, error in
                 
                 if let error = error {
-                    
                 }
                 
                 do {
@@ -75,8 +76,8 @@ class NotificationViewModel: ObservableObject {
         content.sound = .default
         
         var dateComponents = DateComponents()
-        dateComponents.hour = 12
-        dateComponents.minute = 0
+        dateComponents.hour = 15
+        dateComponents.minute = 32
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
