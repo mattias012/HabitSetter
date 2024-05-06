@@ -190,12 +190,15 @@ class StreakViewModel : ObservableObject {
     func loadStreaks() {
         guard let userId = SessionManager.shared.currentUserId else { return }
         
+        //remove previous stuff before running query otherwise stuff will be added and added..
+        self.informations.removeAll()
+        
         db.collection("streaks").whereField("userId", isEqualTo: userId)
             .getDocuments { (querySnapshot, error) in
                 var newInformations = [YearMonthDay: [StreakInfo]]()
                 
-                if let error = error {
-//                    let errorMessage = "\(error)"
+                if error != nil {
+
                 } else {
                     for document in querySnapshot!.documents {
                         do {
@@ -203,10 +206,10 @@ class StreakViewModel : ObservableObject {
                             
                             //Skip streak if it is just 0 (this will happen if user undo an habit and a streak has been created
                             //the right word for contnuing is continue and no return since this is inside the do-while.
-                            if streak.currentStreakCount < 1 {
+                            if streak.currentStreakCount == 0 {
                                 continue
                             }
-                            
+                                                        
                             guard let color = streak.habitColor else { continue }
                             let streakColor = Color(hex: color)
                             let habitName = streak.habitId ?? "Unknown Habit"
@@ -219,14 +222,19 @@ class StreakViewModel : ObservableObject {
                             
                             while date <= end {
                                 let habitInfo = StreakInfo(habitName: habitName, color: streakColor)
-                                newInformations[date, default: []].append(habitInfo)
+                                //Not more than 4 habits per day can be display, otherwise it will overflow the calendar. Not prioritzed to fix yet..
+                                if newInformations[date, default: []].count < 4 {
+                                    newInformations[date, default: []].append(habitInfo)
+                                }
                                 date = date.addDay(value: 1)
                             }
+
                         } catch {
                             print("Error decoding streak: \(error)")
                         }
                     }
                     DispatchQueue.main.async {
+                        
                         self.informations = newInformations
                     }
                 }

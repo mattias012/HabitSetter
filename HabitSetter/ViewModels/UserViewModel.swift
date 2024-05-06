@@ -50,8 +50,8 @@ class UserViewModel: ObservableObject {
     func getGreeting(for userName: String) -> String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 6..<12: return "Good morning, \(userName),\nThese are your habits for today"
-        case 12..<17: return "Good afternoon, \(userName),\nStill some habits left for today? "
+        case 6..<12: return "Good morning \(userName),\nThese are your habits for today"
+        case 12..<17: return "Good afternoon \(userName),\nStill some habits left for today? "
         case 17..<22: return "Good evening, \(userName)"
         default: return "Hello, \(userName)"
         }
