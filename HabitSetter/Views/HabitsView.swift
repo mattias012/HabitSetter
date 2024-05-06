@@ -17,6 +17,7 @@ struct HabitsView: View {
     
     @StateObject var streakVM = StreakViewModel()
     @StateObject var userVM = UserViewModel()
+    @StateObject var notificationVM = NotificationViewModel()
     
     @State var habit : Habit?
     
@@ -52,6 +53,8 @@ struct HabitsView: View {
         }
         .onAppear {
                    checkAndShowGreeting()
+                //Start scheduling notifications
+                notificationVM.scheduleNotification()
         }
     }
     

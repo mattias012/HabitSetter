@@ -189,10 +189,7 @@ class StreakViewModel : ObservableObject {
     
     func loadStreaks() {
         guard let userId = SessionManager.shared.currentUserId else { return }
-        
-        //remove previous stuff before running query otherwise stuff will be added and added..
-        self.informations.removeAll()
-        
+
         db.collection("streaks").whereField("userId", isEqualTo: userId)
             .getDocuments { (querySnapshot, error) in
                 var newInformations = [YearMonthDay: [StreakInfo]]()
@@ -234,6 +231,9 @@ class StreakViewModel : ObservableObject {
                         }
                     }
                     DispatchQueue.main.async {
+                        
+                        //remove previous stuff before otherwise stuff will be added and added.
+                        self.informations.removeAll()
                         
                         self.informations = newInformations
                     }

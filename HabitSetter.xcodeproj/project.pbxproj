@@ -34,6 +34,7 @@
 		CD81BC022BE6C044005A0763 /* CalenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BC012BE6C044005A0763 /* CalenderView.swift */; };
 		CD81BC052BE6C0EC005A0763 /* SwiftUICalendar in Frameworks */ = {isa = PBXBuildFile; productRef = CD81BC042BE6C0EC005A0763 /* SwiftUICalendar */; };
 		CD81BC072BE80C5E005A0763 /* StreakInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD81BC062BE80C5E005A0763 /* StreakInfo.swift */; };
+		CD96B2BF2BE9035400144F4A /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD96B2BE2BE9035400144F4A /* NotificationViewModel.swift */; };
 		CD9DD0562BE4239F0026A222 /* Streak.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0552BE4239E0026A222 /* Streak.swift */; };
 		CD9DD0582BE426E90026A222 /* StreakViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0572BE426E90026A222 /* StreakViewModel.swift */; };
 		CD9DD0622BE4EC700026A222 /* ToastViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */; };
@@ -81,6 +82,7 @@
 		CD81BBF12BE56547005A0763 /* HabitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitCard.swift; sourceTree = "<group>"; };
 		CD81BC012BE6C044005A0763 /* CalenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalenderView.swift; sourceTree = "<group>"; };
 		CD81BC062BE80C5E005A0763 /* StreakInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakInfo.swift; sourceTree = "<group>"; };
+		CD96B2BE2BE9035400144F4A /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		CD9DD0552BE4239E0026A222 /* Streak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Streak.swift; sourceTree = "<group>"; };
 		CD9DD0572BE426E90026A222 /* StreakViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreakViewModel.swift; sourceTree = "<group>"; };
 		CD9DD0612BE4EC700026A222 /* ToastViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastViewModifier.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				CD01AA002BDA675E00D1E32D /* HabitsViewModel.swift */,
 				CDBB98FD2BE1958B00984E17 /* UserViewModel.swift */,
 				CD9DD0572BE426E90026A222 /* StreakViewModel.swift */,
+				CD96B2BE2BE9035400144F4A /* NotificationViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -389,6 +392,7 @@
 				CD81BBF22BE56547005A0763 /* HabitCard.swift in Sources */,
 				CD01A9F92BD9075F00D1E32D /* HabitsView.swift in Sources */,
 				CD01AA012BDA675E00D1E32D /* HabitsViewModel.swift in Sources */,
+				CD96B2BF2BE9035400144F4A /* NotificationViewModel.swift in Sources */,
 				CD01A9B52BD5B73600D1E32D /* HabitSetterApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
