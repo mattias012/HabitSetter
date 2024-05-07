@@ -80,8 +80,8 @@ class NotificationViewModel: ObservableObject {
         
         //Set time when to notify user
         var dateComponents = DateComponents()
-        dateComponents.hour = 15
-        dateComponents.minute = 32
+        dateComponents.hour = 10
+        dateComponents.minute = 15
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
