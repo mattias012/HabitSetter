@@ -18,6 +18,8 @@ class StreakViewModel : ObservableObject {
     
     @Published var informations = [YearMonthDay: [StreakInfo]]()
     
+    @Published var habitsDictionary = [String: String]()  // habitId: habitName
+    
     private var db = Firestore.firestore()
     
     func addOrUpdateStreak(habit: Habit, performedDate: Date, isUndo: Bool = false) {
@@ -188,28 +190,32 @@ class StreakViewModel : ObservableObject {
     }
     
     func loadStreaks() {
+        
         guard let userId = SessionManager.shared.currentUserId else { return }
         
         db.collection("streaks").whereField("userId", isEqualTo: userId)
             .getDocuments { (querySnapshot, error) in
                 var newInformations = [YearMonthDay: [StreakInfo]]()
                 
-                if let error = error {
-//                    let errorMessage = "\(error)"
+                if error != nil {
+                    
                 } else {
+                    
                     for document in querySnapshot!.documents {
                         do {
                             let streak = try document.data(as: Streak.self)
                             
                             //Skip streak if it is just 0 (this will happen if user undo an habit and a streak has been created
                             //the right word for contnuing is continue and no return since this is inside the do-while.
-                            if streak.currentStreakCount < 1 {
+                            if streak.currentStreakCount == 0 {
                                 continue
                             }
                             
-                            guard let color = streak.habitColor else { continue }
+                            guard let color = streak.habitColor, let habitId = streak.habitId else { continue }
                             let streakColor = Color(hex: color)
-                            let habitName = streak.habitId ?? "Unknown Habit"
+                            let habitName = self.habitsDictionary[habitId] ?? "Unknown Habit"
+                            print("Habit ID: \(habitId)")
+                            print("Available habits in dictionary: \(self.habitsDictionary)")
                             
                             let startDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.firstDayOfStreak)
                             let endDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: streak.lastDayPerformed)
@@ -219,21 +225,80 @@ class StreakViewModel : ObservableObject {
                             
                             while date <= end {
                                 let habitInfo = StreakInfo(habitName: habitName, color: streakColor)
-                                newInformations[date, default: []].append(habitInfo)
+                                //Not more than 4 habits per day can be display, otherwise it will overflow the calendar. Not prioritzed to fix yet..
+                                if newInformations[date, default: []].count < 4 {
+                                    newInformations[date, default: []].append(habitInfo)
+                                }
                                 date = date.addDay(value: 1)
                             }
+                            
                         } catch {
                             print("Error decoding streak: \(error)")
                         }
                     }
                     DispatchQueue.main.async {
+                        
+                        //remove previous stuff before otherwise stuff will be added and added.
+                        self.informations.removeAll()
+                        
                         self.informations = newInformations
                     }
                 }
             }
     }
     
+    func loadStreaksAndHabits() {
+        guard let userId = SessionManager.shared.currentUserId else { return }
+        
+        
+        
+        loadHabits(for: userId) {
+            success in
+            if success {
+                DispatchQueue.main.async {
+                    self.loadStreaks()
+                }
+            }
+        }
+    }
     
+    func loadHabits(for userId: String, completion: @escaping (Bool) -> Void) {
+        db.collection("habits").whereField("userId", isEqualTo: userId)
+            .getDocuments {
+                querySnapshot, error in
+                
+                var habits = [String: String]()
+                print("detta sker")
+                guard let documents = querySnapshot?.documents, error == nil else {
+                    print("detta sker också!")
+                    completion(false)
+                    
+                    return
+                }
+                
+                for document in documents {
+                    do {
+                        var habit = try document.data(as: Habit.self)
+                        let id = document.documentID
+                        habit.id = id
+                        habits[id] = habit.name
+                        print("Habit added: \(id) - \(habit.name), \(habits)")
+                        
+                    } catch {
+                        print("Error decoding habit: \(error)")
+                        completion(false)
+                        return
+                    }
+                }
+                
+                DispatchQueue.main.async {
+                    print("detta sker?")
+                    self.habitsDictionary = habits
+                    print("Habits loaded: \(self.habitsDictionary)")
+                    completion(true)
+                }
+            }
+    }
 }
 
 
